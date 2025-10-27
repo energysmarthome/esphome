@@ -2,7 +2,6 @@ substitutions:
   name: boneio-cover
   friendly_name: 'BoneIO ESP Cover'
   serial_prefix: 'esp' #Don't change it.
-  # Új segéd értékek a 2. config mintájára
   nyitasiIdoMinimum: "5"
   nyitasiIdoMaximum: "500"
   # Az "ablak alja" a MEGJELENÍTÉSBEN hány % NYITOTTSÁG legyen? (0=zárt…100=nyitott)
