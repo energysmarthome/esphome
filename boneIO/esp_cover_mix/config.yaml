@@ -1,0 +1,2195 @@
+substitutions:
+  name: boneio-cover-mix
+  friendly_name: BoneIO ESP Cover Mix
+  serial_prefix: esp   #Don't change it.
+  nyitasiIdoMinimum: "5"
+  nyitasiIdoMaximum: "500"
+  # Az "ablak alja" a MEGJELENÍTÉSBEN hány % NYITOTTSÁG legyen? (0=zárt…100=nyitott)
+  ALSO_PONT_KIJELZETT_NYITOTTSAG_PC: "10"
+
+  ######## ENTITÁSOK NEVEI ########
+  light1Name: Light1
+  light2Name: Light2
+  light3Name: Light3
+  light4Name: Light4
+  light5Name: Light5
+  light6Name: Light6
+  light7Name: Light7
+  light8Name: Light8
+  light9Name: Light9
+  light10Name: Light10
+  light11Name: Light11
+  light12Name: Light12
+  light13Name: Light13
+  light14Name: Light14
+  light15Name: Light15
+  light16Name: Light16
+
+  cover1Name: Cover1
+  cover2Name: Cover2
+  cover3Name: Cover3
+  cover4Name: Cover4
+  cover5Name: Cover5
+  cover6Name: Cover6
+  cover7Name: Cover7
+  cover8Name: Cover8
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: true
+  on_boot:
+    priority: 0
+    then:
+      - display.page.show: first_page
+      - component.update: ip_address
+      - component.update: oled_display
+      - script.execute: screensaver_script
+      # Időtartamok beállítása a number entitásokból minden redőnyre
+      - lambda: |-
+          id(shutter_raw_01).set_open_duration((uint32_t)(id(up_time_s_01).state * 1000));
+          id(shutter_raw_01).set_close_duration((uint32_t)(id(down_time_s_01).state * 1000));
+          id(shutter_raw_02).set_open_duration((uint32_t)(id(up_time_s_02).state * 1000));
+          id(shutter_raw_02).set_close_duration((uint32_t)(id(down_time_s_02).state * 1000));
+          id(shutter_raw_03).set_open_duration((uint32_t)(id(up_time_s_03).state * 1000));
+          id(shutter_raw_03).set_close_duration((uint32_t)(id(down_time_s_03).state * 1000));
+          id(shutter_raw_04).set_open_duration((uint32_t)(id(up_time_s_04).state * 1000));
+          id(shutter_raw_04).set_close_duration((uint32_t)(id(down_time_s_04).state * 1000));
+          id(shutter_raw_05).set_open_duration((uint32_t)(id(up_time_s_05).state * 1000));
+          id(shutter_raw_05).set_close_duration((uint32_t)(id(down_time_s_05).state * 1000));
+          id(shutter_raw_06).set_open_duration((uint32_t)(id(up_time_s_06).state * 1000));
+          id(shutter_raw_06).set_close_duration((uint32_t)(id(down_time_s_06).state * 1000));
+          id(shutter_raw_07).set_open_duration((uint32_t)(id(up_time_s_07).state * 1000));
+          id(shutter_raw_07).set_close_duration((uint32_t)(id(down_time_s_07).state * 1000));
+          id(shutter_raw_08).set_open_duration((uint32_t)(id(up_time_s_08).state * 1000));
+          id(shutter_raw_08).set_close_duration((uint32_t)(id(down_time_s_08).state * 1000));
+
+globals:
+  - id: moving_dir_01
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_02
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_03
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_04
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_05
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_06
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_07
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: moving_dir_08
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: esp-idf
+
+ethernet:
+  id: eth
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk:
+    pin: GPIO0
+    mode: CLK_EXT_IN
+  phy_addr: 1
+  power_pin: GPIO16
+
+logger:
+
+api:
+  reboot_timeout: 0s
+
+ota:
+  - platform: esphome
+  - platform: web_server
+
+web_server:
+  port: 80
+  local: true
+
+i2c:
+  - id: i2c_bus
+    sda: GPIO17
+    scl: GPIO33
+    scan: True
+    frequency: 400kHz
+
+time:
+  - platform: homeassistant
+    timezone: Europe/Budapest
+    id: homeassistant_time
+
+external_components:
+  - source: github://energysmarthome/esphome-LM75@main #Original source and thank you note for BTomala
+    components: [lm75]
+
+pcf8574:
+  - id: 'pcf_inputs_1to14'
+    i2c_id: i2c_bus
+    address: 0x20
+    pcf8575: true
+  - id: 'pcf_inputs_15to28'
+    i2c_id: i2c_bus
+    address: 0x21
+    pcf8575: true
+  - id: 'pcf_inputs_28to35_menu'
+    i2c_id: i2c_bus
+    address: 0x22
+    pcf8575: false
+  - id: 'pcf_left'
+    address: 0x23
+    pcf8575: true
+    i2c_id: i2c_bus
+  - id: 'pcf_right'
+    address: 0x24
+    pcf8575: true
+    i2c_id: i2c_bus
+
+switch:
+  - platform: gpio
+    id: buzzer
+    name: "Buzzer"
+    pin:
+      number: GPIO2
+      mode:
+        output: true
+      inverted: false
+
+  # --- REDŐNY 1 ---
+  - platform: gpio
+    id: cover_open_01_out01
+    name: Redőny1 relé1
+    pin:
+      pcf8574: pcf_left
+      number: 15
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_01 [cover_open_01_out01, cover_close_01_out02]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_01_out02
+    name: Redőny1 relé2
+    pin:
+      pcf8574: pcf_left
+      number: 14
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_01
+    restore_mode: always off
+
+  # --- REDŐNY 2 ---
+  - platform: gpio
+    id: cover_open_02_out03
+    name: Redőny2 relé1
+    pin:
+      pcf8574: pcf_left
+      number: 13
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_02 [cover_open_02_out03, cover_close_02_out04]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_02_out04
+    name: Redőny2 relé2
+    pin:
+      pcf8574: pcf_left
+      number: 12
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_02
+    restore_mode: always off
+
+  # --- REDŐNY 3 ---
+  - platform: gpio
+    id: cover_open_03_out05
+    name: Redőny3 relé1
+    pin:
+      pcf8574: pcf_left
+      number: 11
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_03 [cover_open_03_out05, cover_close_03_out06]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_03_out06
+    name: Redőny3 relé2
+    pin:
+      pcf8574: pcf_left
+      number: 10
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_03
+    restore_mode: always off
+
+  # --- REDŐNY 4 ---
+  - platform: gpio
+    id: cover_open_04_out07
+    name: Redőny4 relé1
+    pin:
+      pcf8574: pcf_left
+      number: 9
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_04 [cover_open_04_out07, cover_close_04_out08]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_04_out08
+    name: Redőny4 relé2
+    pin:
+      pcf8574: pcf_left
+      number: 8
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_04
+    restore_mode: always off
+
+  # --- REDŐNY 5 ---
+  - platform: gpio
+    id: cover_open_05_out09
+    name: Redőny5 relé1
+    pin:
+      pcf8574: pcf_right
+      number: 15
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_05 [cover_open_05_out09, cover_close_05_out10]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_05_out10
+    name: Redőny5 relé2
+    pin:
+      pcf8574: pcf_right
+      number: 14
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_05
+    restore_mode: always off
+
+  # --- REDŐNY 6 ---
+  - platform: gpio
+    id: cover_open_06_out11
+    name: Redőny6 relé1
+    pin:
+      pcf8574: pcf_right
+      number: 13
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_06 [cover_open_06_out11, cover_close_06_out12]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_06_out12
+    name: Redőny6 relé2
+    pin:
+      pcf8574: pcf_right
+      number: 12
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_06
+    restore_mode: always off
+
+  # --- REDŐNY 7 ---
+  - platform: gpio
+    id: cover_open_07_out13
+    name: Redőny7 relé1
+    pin:
+      pcf8574: pcf_right
+      number: 11
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_07 [cover_open_07_out13, cover_close_07_out14]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_07_out14
+    name: Redőny7 relé2
+    pin:
+      pcf8574: pcf_right
+      number: 10
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_07
+    restore_mode: always off
+
+  # --- REDŐNY 8 ---
+  - platform: gpio
+    id: cover_open_08_out15
+    name: Redőny8 relé1
+    pin:
+      pcf8574: pcf_right
+      number: 9
+      mode:
+        output: true
+      inverted: true
+    interlock: &cover_interlock_08 [cover_open_08_out15, cover_close_08_out16]
+    interlock_wait_time: 5ms
+    restore_mode: always off
+  - platform: gpio
+    id: cover_close_08_out16
+    name: Redőny8 relé2
+    pin:
+      pcf8574: pcf_right
+      number: 8
+      mode:
+        output: true
+      inverted: true
+    interlock: *cover_interlock_08
+    restore_mode: always off
+
+#########################
+### SEGÉD NUMBER ÖSSZES ###
+#########################
+number:
+  # --- Redőny 01 ---
+  - platform: template
+    name: "Redőny 01 FEL idő (s)"
+    id: up_time_s_01
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_01).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 01 LE idő (s)"
+    id: down_time_s_01
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_01).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 01 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_01
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 02 ---
+  - platform: template
+    name: "Redőny 02 FEL idő (s)"
+    id: up_time_s_02
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_02).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 02 LE idő (s)"
+    id: down_time_s_02
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_02).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 02 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_02
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 03 ---
+  - platform: template
+    name: "Redőny 03 FEL idő (s)"
+    id: up_time_s_03
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_03).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 03 LE idő (s)"
+    id: down_time_s_03
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_03).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 03 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_03
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 04 ---
+  - platform: template
+    name: "Redőny 04 FEL idő (s)"
+    id: up_time_s_04
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_04).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 04 LE idő (s)"
+    id: down_time_s_04
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_04).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 04 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_04
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 05 ---
+  - platform: template
+    name: "Redőny 05 FEL idő (s)"
+    id: up_time_s_05
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_05).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 05 LE idő (s)"
+    id: down_time_s_05
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_05).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 05 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_05
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 06 ---
+  - platform: template
+    name: "Redőny 06 FEL idő (s)"
+    id: up_time_s_06
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_06).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 06 LE idő (s)"
+    id: down_time_s_06
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_06).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 06 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_06
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 07 ---
+  - platform: template
+    name: "Redőny 07 FEL idő (s)"
+    id: up_time_s_07
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_07).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 07 LE idő (s)"
+    id: down_time_s_07
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_07).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 07 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_07
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+  # --- Redőny 08 ---
+  - platform: template
+    name: "Redőny 08 FEL idő (s)"
+    id: up_time_s_08
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_08).set_open_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 08 LE idő (s)"
+    id: down_time_s_08
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 10
+    set_action:
+      - lambda: |-
+          id(shutter_raw_08).set_close_duration((uint32_t)(x * 1000));
+  - platform: template
+    name: "Redőny 08 töréspont – nyitottság (%)"
+    id: knee_raw_open_pc_08
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1
+    max_value: 99
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30
+
+cover:
+  # ===== REDŐNY 1 =====
+  - platform: time_based
+    id: shutter_raw_01
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_01) = 1;'
+      - switch.turn_on: cover_open_01_out01
+    close_action:
+      - lambda: 'id(moving_dir_01) = -1;'
+      - switch.turn_on: cover_close_01_out02
+    stop_action:
+      - switch.turn_off: cover_open_01_out01
+      - switch.turn_off: cover_close_01_out02
+      - lambda: 'id(moving_dir_01) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_01
+    name: ${cover1Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_01).position;
+      float knee_raw  = id(knee_raw_open_pc_01).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_01).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_01).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_01 ]
+    close_action: [ cover.close: shutter_raw_01 ]
+    stop_action:  [ cover.stop:  shutter_raw_01 ]
+    assumed_state: true
+
+  # ===== REDŐNY 2 =====
+  - platform: time_based
+    id: shutter_raw_02
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_02) = 1;'
+      - switch.turn_on: cover_open_02_out03
+    close_action:
+      - lambda: 'id(moving_dir_02) = -1;'
+      - switch.turn_on: cover_close_02_out04
+    stop_action:
+      - switch.turn_off: cover_open_02_out03
+      - switch.turn_off: cover_close_02_out04
+      - lambda: 'id(moving_dir_02) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_02
+    name: ${cover2Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_02).position;
+      float knee_raw  = id(knee_raw_open_pc_02).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_02).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_02).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_02 ]
+    close_action: [ cover.close: shutter_raw_02 ]
+    stop_action:  [ cover.stop:  shutter_raw_02 ]
+    assumed_state: true
+
+  # ===== REDŐNY 3 =====
+  - platform: time_based
+    id: shutter_raw_03
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_03) = 1;'
+      - switch.turn_on: cover_open_03_out05
+    close_action:
+      - lambda: 'id(moving_dir_03) = -1;'
+      - switch.turn_on: cover_close_03_out06
+    stop_action:
+      - switch.turn_off: cover_open_03_out05
+      - switch.turn_off: cover_close_03_out06
+      - lambda: 'id(moving_dir_03) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_03
+    name: ${cover3Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_03).position;
+      float knee_raw  = id(knee_raw_open_pc_03).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_03).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_03).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_03 ]
+    close_action: [ cover.close: shutter_raw_03 ]
+    stop_action:  [ cover.stop:  shutter_raw_03 ]
+    assumed_state: true
+
+  # ===== REDŐNY 4 =====
+  - platform: time_based
+    id: shutter_raw_04
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_04) = 1;'
+      - switch.turn_on: cover_open_04_out07
+    close_action:
+      - lambda: 'id(moving_dir_04) = -1;'
+      - switch.turn_on: cover_close_04_out08
+    stop_action:
+      - switch.turn_off: cover_open_04_out07
+      - switch.turn_off: cover_close_04_out08
+      - lambda: 'id(moving_dir_04) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_04
+    name: ${cover4Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_04).position;
+      float knee_raw  = id(knee_raw_open_pc_04).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_04).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_04).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_04 ]
+    close_action: [ cover.close: shutter_raw_04 ]
+    stop_action:  [ cover.stop:  shutter_raw_04 ]
+    assumed_state: true
+
+  # ===== REDŐNY 5 =====
+  - platform: time_based
+    id: shutter_raw_05
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_05) = 1;'
+      - switch.turn_on: cover_open_05_out09
+    close_action:
+      - lambda: 'id(moving_dir_05) = -1;'
+      - switch.turn_on: cover_close_05_out10
+    stop_action:
+      - switch.turn_off: cover_open_05_out09
+      - switch.turn_off: cover_close_05_out10
+      - lambda: 'id(moving_dir_05) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_05
+    name: ${cover5Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_05).position;
+      float knee_raw  = id(knee_raw_open_pc_05).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_05).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_05).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_05 ]
+    close_action: [ cover.close: shutter_raw_05 ]
+    stop_action:  [ cover.stop:  shutter_raw_05 ]
+    assumed_state: true
+
+  # ===== REDŐNY 6 =====
+  - platform: time_based
+    id: shutter_raw_06
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_06) = 1;'
+      - switch.turn_on: cover_open_06_out11
+    close_action:
+      - lambda: 'id(moving_dir_06) = -1;'
+      - switch.turn_on: cover_close_06_out12
+    stop_action:
+      - switch.turn_off: cover_open_06_out11
+      - switch.turn_off: cover_close_06_out12
+      - lambda: 'id(moving_dir_06) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_06
+    name: ${cover6Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_06).position;
+      float knee_raw  = id(knee_raw_open_pc_06).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_06).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_06).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_06 ]
+    close_action: [ cover.close: shutter_raw_06 ]
+    stop_action:  [ cover.stop:  shutter_raw_06 ]
+    assumed_state: true
+
+  # ===== REDŐNY 7 =====
+  - platform: time_based
+    id: shutter_raw_07
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_07) = 1;'
+      - switch.turn_on: cover_open_07_out13
+    close_action:
+      - lambda: 'id(moving_dir_07) = -1;'
+      - switch.turn_on: cover_close_07_out14
+    stop_action:
+      - switch.turn_off: cover_open_07_out13
+      - switch.turn_off: cover_close_07_out14
+      - lambda: 'id(moving_dir_07) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_07
+    name: ${cover7Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_07).position;
+      float knee_raw  = id(knee_raw_open_pc_07).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_07).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_07).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_07 ]
+    close_action: [ cover.close: shutter_raw_07 ]
+    stop_action:  [ cover.stop:  shutter_raw_07 ]
+    assumed_state: true
+
+  # ===== REDŐNY 8 =====
+  - platform: time_based
+    id: shutter_raw_08
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir_08) = 1;'
+      - switch.turn_on: cover_open_08_out15
+    close_action:
+      - lambda: 'id(moving_dir_08) = -1;'
+      - switch.turn_on: cover_close_08_out16
+    stop_action:
+      - switch.turn_off: cover_open_08_out15
+      - switch.turn_off: cover_close_08_out16
+      - lambda: 'id(moving_dir_08) = 0;'
+    open_duration: 10s
+    close_duration: 10s
+    manual_control: false
+    assumed_state: true
+  - platform: template
+    id: shutter_08
+    name: ${cover8Name}
+    has_position: true
+    lambda: |-
+      float raw_open = id(shutter_raw_08).position;
+      float knee_raw  = id(knee_raw_open_pc_08).state / 100.0f;
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+    position_action:
+      - lambda: |-
+          float target = pos;
+          float knee_raw  = id(knee_raw_open_pc_08).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+          auto call = id(shutter_raw_08).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+    open_action:  [ cover.open: shutter_raw_08 ]
+    close_action: [ cover.close: shutter_raw_08 ]
+    stop_action:  [ cover.stop:  shutter_raw_08 ]
+    assumed_state: true
+
+light:
+  - platform: binary
+    name: ${light1Name}
+    output: out_17
+    id: light_17
+  - platform: binary
+    name: ${light2Name}
+    output: out_18
+    id: light_18
+  - platform: binary
+    name: ${light3Name}
+    output: out_19
+    id: light_19
+  - platform: binary
+    name: ${light4Name}
+    output: out_20
+    id: light_20
+  - platform: binary
+    name: ${light5Name}
+    output: out_21
+    id: light_21
+  - platform: binary
+    name: ${light6Name}
+    output: out_22
+    id: light_22
+  - platform: binary
+    name: ${light7Name}
+    output: out_23
+    id: light_23
+  - platform: binary
+    name: ${light8Name}
+    output: out_24
+    id: light_24
+  - platform: binary
+    name: ${light9Name}
+    output: out_25
+    id: light_25
+  - platform: binary
+    name: ${light10Name}
+    output: out_26
+    id: light_26
+  - platform: binary
+    name: ${light11Name}
+    output: out_27
+    id: light_27
+  - platform: binary
+    name: ${light12Name}
+    output: out_28
+    id: light_28
+  - platform: binary
+    name: ${light13Name}
+    output: out_29
+    id: light_29
+  - platform: binary
+    name: ${light14Name}
+    output: out_30
+    id: light_30
+  - platform: binary
+    name: ${light15Name}
+    output: out_31
+    id: light_31
+  - platform: binary
+    name: ${light16Name}
+    output: out_32
+    id: light_32
+
+binary_sensor:
+  # REDŐNY 1
+  - platform: gpio
+    name: 'IN_01'
+    id: in_01
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 0
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_01) == 1;'
+            then:
+              - cover.stop: shutter_01
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_01) == -1;'
+                  then:
+                    - cover.stop: shutter_01
+                    - delay: 200ms
+              - cover.open: shutter_01
+  - platform: gpio
+    name: 'IN_02'
+    id: in_02
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 1
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_01) == -1;'
+            then:
+              - cover.stop: shutter_01
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_01) == 1;'
+                  then:
+                    - cover.stop: shutter_01
+                    - delay: 200ms
+              - cover.close: shutter_01
+
+  # REDŐNY 2
+  - platform: gpio
+    name: 'IN_03'
+    id: in_03
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 2
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_02) == 1;'
+            then:
+              - cover.stop: shutter_02
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_02) == -1;'
+                  then:
+                    - cover.stop: shutter_02
+                    - delay: 200ms
+              - cover.open: shutter_02
+  - platform: gpio
+    name: 'IN_04'
+    id: in_04
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 3
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_02) == -1;'
+            then:
+              - cover.stop: shutter_02
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_02) == 1;'
+                  then:
+                    - cover.stop: shutter_02
+                    - delay: 200ms
+              - cover.close: shutter_02
+
+  # REDŐNY 3
+  - platform: gpio
+    name: 'IN_05'
+    id: in_05
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 4
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_03) == 1;'
+            then:
+              - cover.stop: shutter_03
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_03) == -1;'
+                  then:
+                    - cover.stop: shutter_03
+                    - delay: 200ms
+              - cover.open: shutter_03
+  - platform: gpio
+    name: 'IN_06'
+    id: in_06
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 5
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_03) == -1;'
+            then:
+              - cover.stop: shutter_03
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_03) == 1;'
+                  then:
+                    - cover.stop: shutter_03
+                    - delay: 200ms
+              - cover.close: shutter_03
+
+  # REDŐNY 4
+  - platform: gpio
+    name: 'IN_07'
+    id: in_07
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 6
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_04) == 1;'
+            then:
+              - cover.stop: shutter_04
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_04) == -1;'
+                  then:
+                    - cover.stop: shutter_04
+                    - delay: 200ms
+              - cover.open: shutter_04
+  - platform: gpio
+    name: 'IN_08'
+    id: in_08
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 8
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_04) == -1;'
+            then:
+              - cover.stop: shutter_04
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_04) == 1;'
+                  then:
+                    - cover.stop: shutter_04
+                    - delay: 200ms
+              - cover.close: shutter_04
+
+  # REDŐNY 5
+  - platform: gpio
+    name: 'IN_09'
+    id: in_09
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 9
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_05) == 1;'
+            then:
+              - cover.stop: shutter_05
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_05) == -1;'
+                  then:
+                    - cover.stop: shutter_05
+                    - delay: 200ms
+              - cover.open: shutter_05
+  - platform: gpio
+    name: 'IN_10'
+    id: in_10
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 10
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_05) == -1;'
+            then:
+              - cover.stop: shutter_05
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_05) == 1;'
+                  then:
+                    - cover.stop: shutter_05
+                    - delay: 200ms
+              - cover.close: shutter_05
+
+  # REDŐNY 6
+  - platform: gpio
+    name: 'IN_11'
+    id: in_11
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 11
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_06) == 1;'
+            then:
+              - cover.stop: shutter_06
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_06) == -1;'
+                  then:
+                    - cover.stop: shutter_06
+                    - delay: 200ms
+              - cover.open: shutter_06
+  - platform: gpio
+    name: 'IN_12'
+    id: in_12
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 12
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_06) == -1;'
+            then:
+              - cover.stop: shutter_06
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_06) == 1;'
+                  then:
+                    - cover.stop: shutter_06
+                    - delay: 200ms
+              - cover.close: shutter_06
+
+  # REDŐNY 7
+  - platform: gpio
+    name: 'IN_13'
+    id: in_13
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 13
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_07) == 1;'
+            then:
+              - cover.stop: shutter_07
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_07) == -1;'
+                  then:
+                    - cover.stop: shutter_07
+                    - delay: 200ms
+              - cover.open: shutter_07
+  - platform: gpio
+    name: 'IN_14'
+    id: in_14
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 14
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_07) == -1;'
+            then:
+              - cover.stop: shutter_07
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_07) == 1;'
+                  then:
+                    - cover.stop: shutter_07
+                    - delay: 200ms
+              - cover.close: shutter_07
+
+  # REDŐNY 8
+  - platform: gpio
+    name: 'IN_15'
+    id: in_15
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 6
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_08) == 1;'
+            then:
+              - cover.stop: shutter_08
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_08) == -1;'
+                  then:
+                    - cover.stop: shutter_08
+                    - delay: 200ms
+              - cover.open: shutter_08
+  - platform: gpio
+    name: 'IN_16'
+    id: in_16
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 5
+      mode: { input: true }
+      inverted: true
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir_08) == -1;'
+            then:
+              - cover.stop: shutter_08
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir_08) == 1;'
+                  then:
+                    - cover.stop: shutter_08
+                    - delay: 200ms
+              - cover.close: shutter_08
+
+  - platform: gpio
+    name: IN_17
+    id: in_17
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 4
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_17
+
+  - platform: gpio
+    name: IN_18
+    id: in_18
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 3
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_18
+
+  - platform: gpio
+    name: IN_19
+    id: in_19
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 2
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_19
+
+  - platform: gpio
+    name: IN_20
+    id: in_20
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 1
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_20
+
+  - platform: gpio
+    name: IN_21
+    id: in_21
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 0
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_21
+
+  - platform: gpio
+    name: IN_22
+    id: in_22
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 8
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_22
+
+  - platform: gpio
+    name: IN_23
+    id: in_23
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 9
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_23
+
+  - platform: gpio
+    name: IN_24
+    id: in_24
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 10
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_24
+
+  - platform: gpio
+    name: IN_25
+    id: in_25
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 11
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_25
+
+  - platform: gpio
+    name: IN_26
+    id: in_26
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 12
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_26
+
+  - platform: gpio
+    name: IN_27
+    id: in_27
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 13
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_27
+
+  - platform: gpio
+    name: IN_28
+    id: in_28
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 14
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_28
+
+  - platform: gpio
+    name: IN_29
+    id: in_29
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 0
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_29
+
+  - platform: gpio
+    name: IN_30
+    id: in_30
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 1
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_30
+
+  - platform: gpio
+    name: IN_31
+    id: in_31
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 2
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_31
+
+  - platform: gpio
+    name: IN_32
+    id: in_32
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 3
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - light.toggle: light_32
+
+  - platform: gpio
+    name: IN_33
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 4
+      mode:
+        input: true
+      inverted: true
+
+  - platform: gpio
+    name: IN_34
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 5
+      mode:
+        input: true
+      inverted: true
+
+  - platform: gpio
+    name: IN_35
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 6
+      mode:
+        input: true
+      inverted: true
+
+  - platform: gpio
+    entity_category: config
+    id: boneIO_button
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 7
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        # woke up when on the screensaver, as well do not include the logo page and screensaver in a loop when pushing a button
+        - if:
+            condition:
+              # on the last page go to the first page skipping the screensaver and logo page
+              display.is_displaying_page: last_page
+            then:
+              - display.page.show: first_page
+              - component.update: oled_display
+            else:
+              - if:
+                  condition:
+                    # on the screensaver, show the logo for a while and display the first page
+                    display.is_displaying_page: screensaver
+                  then:
+                    - display.page.show: first_page
+                    - component.update: oled_display
+                  else:
+                    # not the last page and screensaver go to the next page
+                    - display.page.show_next: oled_display
+                    - component.update: oled_display
+        # restart screensaver script
+        - script.execute: screensaver_script
+
+display:
+  - platform: ssd1306_i2c
+    id: oled_display
+    model: "SH1106 128x64"
+    address: 0x3C
+    contrast: 0.5
+    pages:
+      - id: first_page
+        lambda: |-
+          it.rectangle(0, 0, 126, 15);
+          it.printf(64,11, id(size_10), TextAlign::BASELINE_CENTER, "bone IO");
+          it.printf(4, 37, id(size_10), TextAlign::BASELINE_LEFT ,"IP addr:");
+          it.printf(124, 37, id(size_10), TextAlign::BASELINE_RIGHT ,"%s", id(ip_address).state.c_str());
+          it.printf(4, 49, id(size_10), TextAlign::BASELINE_LEFT ,"Uptime:");
+          it.printf(124, 49, id(size_10), TextAlign::BASELINE_RIGHT ,"%s", id(wt32_uptime).state.c_str());
+          it.printf(4, 61, id(size_10), TextAlign::BASELINE_LEFT ,"Temperature:");
+          it.printf(124, 61, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2f°C", id(boneIO_temp).state);
+      # additional pages should be defined between the first and last page
+      - id: last_page
+        lambda: |-
+          it.rectangle(0, 0, 126, 15);
+          it.printf(64,11, id(size_10), TextAlign::BASELINE_CENTER, "bone IO");
+          it.printf(4, 25, id(size_10), TextAlign::BASELINE_LEFT ,"Current:");
+          it.printf(124, 25, id(size_10), TextAlign::BASELINE_RIGHT ,"%.3fA", id(ina_current).state);
+          it.printf(4, 37, id(size_10), TextAlign::BASELINE_LEFT ,"Power:");
+          it.printf(124, 37, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2fW", id(ina_power).state);
+          it.printf(4, 49, id(size_10), TextAlign::BASELINE_LEFT ,"Bus Volt:");
+          it.printf(124, 49, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2fV", id(ina_bus_voltage).state);
+          it.printf(4, 61, id(size_10), TextAlign::BASELINE_LEFT ,"Shunt Volt:");
+          it.printf(124, 61, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2fV", id(ina_shunt_voltage).state);
+      - id: screensaver
+        lambda: |-
+          it.fill(COLOR_OFF);
+
+font:
+  - file: "gfonts://Ubuntu"
+    id: size_10
+    size: 10
+
+######################
+### MODBUS SECTION ###
+######################
+# UNCOMMENT BELOW TO USE MODBUS
+# uart:
+#   id: uart_pin14_15
+#   rx_pin: GPIO14
+#   tx_pin: GPIO15
+#   baud_rate: 9600
+#   stop_bits: 1
+#
+# modbus:
+#   send_wait_time: 200ms
+#   uart_id: uart_pin14_15
+#   id: boneio_modbus
+#
+# modbus_controller:
+#   - id: YOURDEVICE ID
+#     address: 0x09
+#     modbus_id: mod_bus
+#     setup_priority: -10
+#     update_interval: 60s
+
+text_sensor:
+  - platform: template
+    name: "Serial No."
+    id: serial_no
+    lambda: |-
+      std::string mac = get_mac_address();
+      return std::string("${serial_prefix}") + mac.substr(mac.length()/2);
+    icon: mdi:expansion-card-variant
+    entity_category: diagnostic
+    update_interval: 60min
+
+  - platform: template
+    name: Uptime
+    id: wt32_uptime
+    entity_category: diagnostic
+    icon: mdi:clock-start
+
+  - platform: template
+    name: "IP Address"
+    id: ip_address
+    entity_category: diagnostic
+    icon: "mdi:ip-network"
+    lambda: |-
+      return id(eth).get_ip_addresses().empty() ? "Unset" : id(eth).get_ip_addresses()[0].str();
+    update_interval: 60s
+
+sensor:
+  - platform: adc
+    pin: GPIO39           # A_1
+    name: "A1 0-5V"
+    attenuation: 12db
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    filters:
+      # 0..3.30 V a lábon -> 0..5.00 V a bemeneten
+      - calibrate_linear:
+          - 0.00 -> 0.00
+          - 3.30 -> 5.00
+
+  - platform: adc
+    pin: GPIO36           # A_2
+    name: "A2 0-10V"
+    attenuation: 12db
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    filters:
+      # 0..3.30 V a lábon -> 0..10.00 V a bemeneten
+      - calibrate_linear:
+          - 0.00 -> 0.00
+          - 3.30 -> 10.00
+
+  - platform: adc
+    pin: GPIO35           # A_3
+    name: "A3 0-25V"
+    attenuation: 12db
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    filters:
+      # 0..3.30 V a lábon -> 0..25.00 V a bemeneten
+      - calibrate_linear:
+          - 0.00 -> 0.00
+          - 3.30 -> 25.00
+
+  - platform: uptime
+    id: wt32_uptime_seconds
+    update_interval: 60s
+    entity_category: diagnostic
+    on_raw_value:
+      then:
+        - text_sensor.template.publish:
+            id: wt32_uptime
+            state: !lambda |-
+              int seconds = round(id(wt32_uptime_seconds).raw_state);
+              int days = seconds / (24 * 3600);
+              seconds = seconds % (24 * 3600);
+              int hours = seconds / 3600;
+              seconds = seconds % 3600;
+              int minutes = seconds / 60;
+              return (
+                (days ? to_string(days) + "d " : "") +
+                (hours ? to_string(hours) + "h " : "") +
+                (to_string(minutes) + "m")
+              ).c_str();
+
+  - platform: ina219
+    address: 0x40
+    shunt_resistance: 0.1 ohm
+    current:
+      id: ina_current
+      name: 'INA219 Current'
+    power:
+      id: ina_power
+      name: 'INA219 Power'
+    bus_voltage:
+      id: ina_bus_voltage
+      name: 'INA219 Bus Voltage'
+    shunt_voltage:
+      id: ina_shunt_voltage
+      name: 'INA219 Shunt Voltage'
+    max_voltage: 32.0V
+    max_current: 3.2A
+    update_interval: 30s
+
+  - platform: lm75
+    id: boneIO_temp
+    name: 'LM75B Temperature'
+    update_interval: 30s
+
+script:
+  - id: screensaver_script
+    # screensaver script, turn on screensaver after 30 seconds, restart counter each time when invoked
+    mode: restart
+    then:
+      # set the time after which the screensaver will be activated
+      - delay: 30s
+      - display.page.show: screensaver
+      - component.update: oled_display
+
+output:
+  - platform: gpio
+    id: out_17
+    pin:
+      pcf8574: pcf_left
+      number: 0
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_18
+    pin:
+      pcf8574: pcf_left
+      number: 1
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_19
+    pin:
+      pcf8574: pcf_left
+      number: 2
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_20
+    pin:
+      pcf8574: pcf_left
+      number: 3
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_21
+    pin:
+      pcf8574: pcf_left
+      number: 4
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_22
+    pin:
+      pcf8574: pcf_left
+      number: 5
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_23
+    pin:
+      pcf8574: pcf_left
+      number: 6
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_24
+    pin:
+      pcf8574: pcf_left
+      number: 7
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_25
+    pin:
+      pcf8574: pcf_right
+      number: 0
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_26
+    pin:
+      pcf8574: pcf_right
+      number: 1
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_27
+    pin:
+      pcf8574: pcf_right
+      number: 2
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_28
+    pin:
+      pcf8574: pcf_right
+      number: 3
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_29
+    pin:
+      pcf8574: pcf_right
+      number: 4
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_30
+    pin:
+      pcf8574: pcf_right
+      number: 5
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_31
+    pin:
+      pcf8574: pcf_right
+      number: 6
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_32
+    pin:
+      pcf8574: pcf_right
+      number: 7
+      mode:
+        output: true
+      inverted: true
