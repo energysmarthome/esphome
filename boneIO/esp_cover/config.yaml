@@ -2115,7 +2115,7 @@ binary_sensor:
               - cover.close: shutter_07
   # REDŐNY 8
   - platform: gpio
-    name: '${cover8Name}'
+    name: '${cover8Name} IN_15'
     id: in_15
     pin:
       pcf8574: pcf_inputs_15to28
