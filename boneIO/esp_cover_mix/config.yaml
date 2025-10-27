@@ -178,7 +178,7 @@ switch:
   # --- REDŐNY 1 ---
   - platform: gpio
     id: cover_open_01_out01
-    name: Redőny1 relé1
+    name: ${cover1Name} relé1
     pin:
       pcf8574: pcf_left
       number: 15
@@ -190,7 +190,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_01_out02
-    name: Redőny1 relé2
+    name: ${cover1Name} relé2
     pin:
       pcf8574: pcf_left
       number: 14
@@ -203,7 +203,7 @@ switch:
   # --- REDŐNY 2 ---
   - platform: gpio
     id: cover_open_02_out03
-    name: Redőny2 relé1
+    name: ${cover2Name} relé1
     pin:
       pcf8574: pcf_left
       number: 13
@@ -215,7 +215,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_02_out04
-    name: Redőny2 relé2
+    name: ${cover2Name} relé2
     pin:
       pcf8574: pcf_left
       number: 12
@@ -228,7 +228,7 @@ switch:
   # --- REDŐNY 3 ---
   - platform: gpio
     id: cover_open_03_out05
-    name: Redőny3 relé1
+    name: ${cover3Name} relé1
     pin:
       pcf8574: pcf_left
       number: 11
@@ -240,7 +240,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_03_out06
-    name: Redőny3 relé2
+    name: ${cover3Name} relé2
     pin:
       pcf8574: pcf_left
       number: 10
@@ -253,7 +253,7 @@ switch:
   # --- REDŐNY 4 ---
   - platform: gpio
     id: cover_open_04_out07
-    name: Redőny4 relé1
+    name: ${cover4Name} relé1
     pin:
       pcf8574: pcf_left
       number: 9
@@ -265,7 +265,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_04_out08
-    name: Redőny4 relé2
+    name: ${cover4Name} relé2
     pin:
       pcf8574: pcf_left
       number: 8
@@ -278,7 +278,7 @@ switch:
   # --- REDŐNY 5 ---
   - platform: gpio
     id: cover_open_05_out09
-    name: Redőny5 relé1
+    name: ${cover5Name} relé1
     pin:
       pcf8574: pcf_right
       number: 15
@@ -290,7 +290,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_05_out10
-    name: Redőny5 relé2
+    name: ${cover5Name} relé2
     pin:
       pcf8574: pcf_right
       number: 14
@@ -303,7 +303,7 @@ switch:
   # --- REDŐNY 6 ---
   - platform: gpio
     id: cover_open_06_out11
-    name: Redőny6 relé1
+    name: ${cover6Name} relé1
     pin:
       pcf8574: pcf_right
       number: 13
@@ -315,7 +315,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_06_out12
-    name: Redőny6 relé2
+    name: ${cover6Name} relé2
     pin:
       pcf8574: pcf_right
       number: 12
@@ -328,7 +328,7 @@ switch:
   # --- REDŐNY 7 ---
   - platform: gpio
     id: cover_open_07_out13
-    name: Redőny7 relé1
+    name: ${cover7Name} relé1
     pin:
       pcf8574: pcf_right
       number: 11
@@ -340,7 +340,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_07_out14
-    name: Redőny7 relé2
+    name: ${cover7Name} relé2
     pin:
       pcf8574: pcf_right
       number: 10
@@ -353,7 +353,7 @@ switch:
   # --- REDŐNY 8 ---
   - platform: gpio
     id: cover_open_08_out15
-    name: Redőny8 relé1
+    name: ${cover8Name} relé1
     pin:
       pcf8574: pcf_right
       number: 9
@@ -365,7 +365,7 @@ switch:
     restore_mode: always off
   - platform: gpio
     id: cover_close_08_out16
-    name: Redőny8 relé2
+    name: ${cover8Name} relé2
     pin:
       pcf8574: pcf_right
       number: 8
@@ -381,7 +381,7 @@ switch:
 number:
   # --- Redőny 01 ---
   - platform: template
-    name: "Redőny 01 FEL idő (s)"
+    name: "${cover1Name} FEL idő (s)"
     id: up_time_s_01
     unit_of_measurement: "s"
     mode: BOX
@@ -395,7 +395,7 @@ number:
       - lambda: |-
           id(shutter_raw_01).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 01 LE idő (s)"
+    name: "${cover1Name} LE idő (s)"
     id: down_time_s_01
     unit_of_measurement: "s"
     mode: BOX
@@ -409,7 +409,7 @@ number:
       - lambda: |-
           id(shutter_raw_01).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 01 töréspont – nyitottság (%)"
+    name: "${cover1Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_01
     unit_of_measurement: "%"
     mode: BOX
@@ -422,7 +422,7 @@ number:
 
   # --- Redőny 02 ---
   - platform: template
-    name: "Redőny 02 FEL idő (s)"
+    name: "${cover2Name} FEL idő (s)"
     id: up_time_s_02
     unit_of_measurement: "s"
     mode: BOX
@@ -436,7 +436,7 @@ number:
       - lambda: |-
           id(shutter_raw_02).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 02 LE idő (s)"
+    name: "${cover2Name} LE idő (s)"
     id: down_time_s_02
     unit_of_measurement: "s"
     mode: BOX
@@ -450,7 +450,7 @@ number:
       - lambda: |-
           id(shutter_raw_02).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 02 töréspont – nyitottság (%)"
+    name: "${cover2Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_02
     unit_of_measurement: "%"
     mode: BOX
@@ -463,7 +463,7 @@ number:
 
   # --- Redőny 03 ---
   - platform: template
-    name: "Redőny 03 FEL idő (s)"
+    name: "${cover3Name} FEL idő (s)"
     id: up_time_s_03
     unit_of_measurement: "s"
     mode: BOX
@@ -477,7 +477,7 @@ number:
       - lambda: |-
           id(shutter_raw_03).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 03 LE idő (s)"
+    name: "${cover3Name} LE idő (s)"
     id: down_time_s_03
     unit_of_measurement: "s"
     mode: BOX
@@ -491,7 +491,7 @@ number:
       - lambda: |-
           id(shutter_raw_03).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 03 töréspont – nyitottság (%)"
+    name: "${cover3Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_03
     unit_of_measurement: "%"
     mode: BOX
@@ -504,7 +504,7 @@ number:
 
   # --- Redőny 04 ---
   - platform: template
-    name: "Redőny 04 FEL idő (s)"
+    name: "${cover4Name} FEL idő (s)"
     id: up_time_s_04
     unit_of_measurement: "s"
     mode: BOX
@@ -518,7 +518,7 @@ number:
       - lambda: |-
           id(shutter_raw_04).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 04 LE idő (s)"
+    name: "${cover4Name} LE idő (s)"
     id: down_time_s_04
     unit_of_measurement: "s"
     mode: BOX
@@ -532,7 +532,7 @@ number:
       - lambda: |-
           id(shutter_raw_04).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 04 töréspont – nyitottság (%)"
+    name: "${cover4Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_04
     unit_of_measurement: "%"
     mode: BOX
@@ -545,7 +545,7 @@ number:
 
   # --- Redőny 05 ---
   - platform: template
-    name: "Redőny 05 FEL idő (s)"
+    name: "${cover5Name} FEL idő (s)"
     id: up_time_s_05
     unit_of_measurement: "s"
     mode: BOX
@@ -559,7 +559,7 @@ number:
       - lambda: |-
           id(shutter_raw_05).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 05 LE idő (s)"
+    name: "${cover5Name} LE idő (s)"
     id: down_time_s_05
     unit_of_measurement: "s"
     mode: BOX
@@ -573,7 +573,7 @@ number:
       - lambda: |-
           id(shutter_raw_05).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 05 töréspont – nyitottság (%)"
+    name: "${cover5Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_05
     unit_of_measurement: "%"
     mode: BOX
@@ -586,7 +586,7 @@ number:
 
   # --- Redőny 06 ---
   - platform: template
-    name: "Redőny 06 FEL idő (s)"
+    name: "${cover6Name} FEL idő (s)"
     id: up_time_s_06
     unit_of_measurement: "s"
     mode: BOX
@@ -600,7 +600,7 @@ number:
       - lambda: |-
           id(shutter_raw_06).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 06 LE idő (s)"
+    name: "${cover6Name} LE idő (s)"
     id: down_time_s_06
     unit_of_measurement: "s"
     mode: BOX
@@ -614,7 +614,7 @@ number:
       - lambda: |-
           id(shutter_raw_06).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 06 töréspont – nyitottság (%)"
+    name: "${cover6Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_06
     unit_of_measurement: "%"
     mode: BOX
@@ -627,7 +627,7 @@ number:
 
   # --- Redőny 07 ---
   - platform: template
-    name: "Redőny 07 FEL idő (s)"
+    name: "${cover7Name} FEL idő (s)"
     id: up_time_s_07
     unit_of_measurement: "s"
     mode: BOX
@@ -641,7 +641,7 @@ number:
       - lambda: |-
           id(shutter_raw_07).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 07 LE idő (s)"
+    name: "${cover7Name} LE idő (s)"
     id: down_time_s_07
     unit_of_measurement: "s"
     mode: BOX
@@ -655,7 +655,7 @@ number:
       - lambda: |-
           id(shutter_raw_07).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 07 töréspont – nyitottság (%)"
+    name: "${cover7Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_07
     unit_of_measurement: "%"
     mode: BOX
@@ -668,7 +668,7 @@ number:
 
   # --- Redőny 08 ---
   - platform: template
-    name: "Redőny 08 FEL idő (s)"
+    name: "${cover8Name} FEL idő (s)"
     id: up_time_s_08
     unit_of_measurement: "s"
     mode: BOX
@@ -682,7 +682,7 @@ number:
       - lambda: |-
           id(shutter_raw_08).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 08 LE idő (s)"
+    name: "${cover8Name} LE idő (s)"
     id: down_time_s_08
     unit_of_measurement: "s"
     mode: BOX
@@ -696,7 +696,7 @@ number:
       - lambda: |-
           id(shutter_raw_08).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 08 töréspont – nyitottság (%)"
+    name: "${cover8Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_08
     unit_of_measurement: "%"
     mode: BOX
@@ -1193,7 +1193,7 @@ light:
 binary_sensor:
   # REDŐNY 1
   - platform: gpio
-    name: 'IN_01'
+    name: '${cover1Name} IN_01'
     id: in_01
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1217,7 +1217,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_01
   - platform: gpio
-    name: 'IN_02'
+    name: '${cover1Name} IN_02'
     id: in_02
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1243,7 +1243,7 @@ binary_sensor:
 
   # REDŐNY 2
   - platform: gpio
-    name: 'IN_03'
+    name: '${cover2Name} IN_03'
     id: in_03
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1267,7 +1267,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_02
   - platform: gpio
-    name: 'IN_04'
+    name: '${cover2Name} IN_04'
     id: in_04
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1293,7 +1293,7 @@ binary_sensor:
 
   # REDŐNY 3
   - platform: gpio
-    name: 'IN_05'
+    name: '${cover3Name} IN_05'
     id: in_05
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1317,7 +1317,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_03
   - platform: gpio
-    name: 'IN_06'
+    name: '${cover3Name} IN_06'
     id: in_06
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1343,7 +1343,7 @@ binary_sensor:
 
   # REDŐNY 4
   - platform: gpio
-    name: 'IN_07'
+    name: '${cover4Name} IN_07'
     id: in_07
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1367,7 +1367,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_04
   - platform: gpio
-    name: 'IN_08'
+    name: '${cover4Name} IN_08'
     id: in_08
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1393,7 +1393,7 @@ binary_sensor:
 
   # REDŐNY 5
   - platform: gpio
-    name: 'IN_09'
+    name: '${cover5Name} IN_09'
     id: in_09
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1417,7 +1417,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_05
   - platform: gpio
-    name: 'IN_10'
+    name: '${cover5Name} IN_10'
     id: in_10
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1443,7 +1443,7 @@ binary_sensor:
 
   # REDŐNY 6
   - platform: gpio
-    name: 'IN_11'
+    name: '${cover6Name} IN_11'
     id: in_11
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1467,7 +1467,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_06
   - platform: gpio
-    name: 'IN_12'
+    name: '${cover6Name} IN_12'
     id: in_12
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1493,7 +1493,7 @@ binary_sensor:
 
   # REDŐNY 7
   - platform: gpio
-    name: 'IN_13'
+    name: '${cover7Name} IN_13'
     id: in_13
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1517,7 +1517,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_07
   - platform: gpio
-    name: 'IN_14'
+    name: '${cover7Name} IN_14'
     id: in_14
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1543,7 +1543,7 @@ binary_sensor:
 
   # REDŐNY 8
   - platform: gpio
-    name: 'IN_15'
+    name: '${cover8Name} IN_15'
     id: in_15
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1567,7 +1567,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_08
   - platform: gpio
-    name: 'IN_16'
+    name: '${cover8Name} IN_16'
     id: in_16
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1592,7 +1592,7 @@ binary_sensor:
               - cover.close: shutter_08
 
   - platform: gpio
-    name: IN_17
+    name: ${light1Name} IN_17
     id: in_17
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1605,7 +1605,7 @@ binary_sensor:
         - light.toggle: light_17
 
   - platform: gpio
-    name: IN_18
+    name: ${light2Name} IN_18
     id: in_18
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1618,7 +1618,7 @@ binary_sensor:
         - light.toggle: light_18
 
   - platform: gpio
-    name: IN_19
+    name: ${light3Name} IN_19
     id: in_19
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1631,7 +1631,7 @@ binary_sensor:
         - light.toggle: light_19
 
   - platform: gpio
-    name: IN_20
+    name: ${light4Name} IN_20
     id: in_20
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1644,7 +1644,7 @@ binary_sensor:
         - light.toggle: light_20
 
   - platform: gpio
-    name: IN_21
+    name: ${light5Name} IN_21
     id: in_21
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1657,7 +1657,7 @@ binary_sensor:
         - light.toggle: light_21
 
   - platform: gpio
-    name: IN_22
+    name: ${light6Name} IN_22
     id: in_22
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1670,7 +1670,7 @@ binary_sensor:
         - light.toggle: light_22
 
   - platform: gpio
-    name: IN_23
+    name: ${light7Name} IN_23
     id: in_23
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1683,7 +1683,7 @@ binary_sensor:
         - light.toggle: light_23
 
   - platform: gpio
-    name: IN_24
+    name: ${light8Name} IN_24
     id: in_24
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1696,7 +1696,7 @@ binary_sensor:
         - light.toggle: light_24
 
   - platform: gpio
-    name: IN_25
+    name: ${light9Name} IN_25
     id: in_25
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1709,7 +1709,7 @@ binary_sensor:
         - light.toggle: light_25
 
   - platform: gpio
-    name: IN_26
+    name: ${light10Name} IN_26
     id: in_26
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1722,7 +1722,7 @@ binary_sensor:
         - light.toggle: light_26
 
   - platform: gpio
-    name: IN_27
+    name: ${light11Name} IN_27
     id: in_27
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1735,7 +1735,7 @@ binary_sensor:
         - light.toggle: light_27
 
   - platform: gpio
-    name: IN_28
+    name: ${light12Name} IN_28
     id: in_28
     pin:
       pcf8574: pcf_inputs_15to28
@@ -1748,7 +1748,7 @@ binary_sensor:
         - light.toggle: light_28
 
   - platform: gpio
-    name: IN_29
+    name: ${light13Name} IN_29
     id: in_29
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -1761,7 +1761,7 @@ binary_sensor:
         - light.toggle: light_29
 
   - platform: gpio
-    name: IN_30
+    name: ${light14Name} IN_30
     id: in_30
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -1774,7 +1774,7 @@ binary_sensor:
         - light.toggle: light_30
 
   - platform: gpio
-    name: IN_31
+    name: ${light15Name} IN_31
     id: in_31
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -1787,7 +1787,7 @@ binary_sensor:
         - light.toggle: light_31
 
   - platform: gpio
-    name: IN_32
+    name: ${light16Name} IN_32
     id: in_32
     pin:
       pcf8574: pcf_inputs_28to35_menu
