@@ -7,6 +7,25 @@ substitutions:
   nyitasiIdoMaximum: "500"
   # Az "ablak alja" a MEGJELENÍTÉSBEN hány % NYITOTTSÁG legyen? (0=zárt…100=nyitott)
   ALSO_PONT_KIJELZETT_NYITOTTSAG_PC: "10"
+  cover1Name: Cover1
+  cover2Name: Cover2
+  cover3Name: Cover3
+  cover4Name: Cover4
+  cover5Name: Cover5
+  cover6Name: Cover6
+  cover7Name: Cover7
+  cover8Name: Cover8
+  cover9Name: Cover9
+  cover10Name: Cover10
+  cover11Name: Cover11
+  cover12Name: Cover12
+  cover13Name: Cover13
+  cover14Name: Cover14
+  cover15Name: Cover15
+  cover16Name: Cover16
+
+
+
 
 esphome:
   name: '${name}'
@@ -239,7 +258,7 @@ pcf8574:
 number:
   # --- Redőny 01 ---
   - platform: template
-    name: "Redőny 01 FEL idő (s)"
+    name: "${cover1Name} FEL idő (s)"
     id: up_time_s_01
     unit_of_measurement: "s"
     mode: BOX
@@ -253,7 +272,7 @@ number:
       - lambda: |-
           id(shutter_raw_01).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 01 LE idő (s)"
+    name: "${cover1Name} LE idő (s)"
     id: down_time_s_01
     unit_of_measurement: "s"
     mode: BOX
@@ -267,7 +286,7 @@ number:
       - lambda: |-
           id(shutter_raw_01).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 01 töréspont – nyitottság (%)"
+    name: "${cover1Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_01
     unit_of_measurement: "%"
     mode: BOX
@@ -280,7 +299,7 @@ number:
 
   # --- Redőny 02 ---
   - platform: template
-    name: "Redőny 02 FEL idő (s)"
+    name: "${cover2Name} FEL idő (s)"
     id: up_time_s_02
     unit_of_measurement: "s"
     mode: BOX
@@ -294,7 +313,7 @@ number:
       - lambda: |-
           id(shutter_raw_02).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 02 LE idő (s)"
+    name: "${cover2Name} LE idő (s)"
     id: down_time_s_02
     unit_of_measurement: "s"
     mode: BOX
@@ -308,7 +327,7 @@ number:
       - lambda: |-
           id(shutter_raw_02).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 02 töréspont – nyitottság (%)"
+    name: "${cover2Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_02
     unit_of_measurement: "%"
     mode: BOX
@@ -321,7 +340,7 @@ number:
 
   # --- Redőny 03 ---
   - platform: template
-    name: "Redőny 03 FEL idő (s)"
+    name: "${cover3Name} FEL idő (s)"
     id: up_time_s_03
     unit_of_measurement: "s"
     mode: BOX
@@ -335,7 +354,7 @@ number:
       - lambda: |-
           id(shutter_raw_03).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 03 LE idő (s)"
+    name: "${cover3Name} LE idő (s)"
     id: down_time_s_03
     unit_of_measurement: "s"
     mode: BOX
@@ -349,7 +368,7 @@ number:
       - lambda: |-
           id(shutter_raw_03).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 03 töréspont – nyitottság (%)"
+    name: "${cover3Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_03
     unit_of_measurement: "%"
     mode: BOX
@@ -362,7 +381,7 @@ number:
 
   # --- Redőny 04 ---
   - platform: template
-    name: "Redőny 04 FEL idő (s)"
+    name: "${cover4Name} FEL idő (s)"
     id: up_time_s_04
     unit_of_measurement: "s"
     mode: BOX
@@ -376,7 +395,7 @@ number:
       - lambda: |-
           id(shutter_raw_04).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 04 LE idő (s)"
+    name: "${cover4Name} LE idő (s)"
     id: down_time_s_04
     unit_of_measurement: "s"
     mode: BOX
@@ -390,7 +409,7 @@ number:
       - lambda: |-
           id(shutter_raw_04).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 04 töréspont – nyitottság (%)"
+    name: "${cover4Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_04
     unit_of_measurement: "%"
     mode: BOX
@@ -403,7 +422,7 @@ number:
 
   # --- Redőny 05 ---
   - platform: template
-    name: "Redőny 05 FEL idő (s)"
+    name: "${cover5Name} FEL idő (s)"
     id: up_time_s_05
     unit_of_measurement: "s"
     mode: BOX
@@ -417,7 +436,7 @@ number:
       - lambda: |-
           id(shutter_raw_05).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 05 LE idő (s)"
+    name: "${cover5Name} LE idő (s)"
     id: down_time_s_05
     unit_of_measurement: "s"
     mode: BOX
@@ -431,7 +450,7 @@ number:
       - lambda: |-
           id(shutter_raw_05).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 05 töréspont – nyitottság (%)"
+    name: "${cover5Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_05
     unit_of_measurement: "%"
     mode: BOX
@@ -444,7 +463,7 @@ number:
 
   # --- Redőny 06 ---
   - platform: template
-    name: "Redőny 06 FEL idő (s)"
+    name: "${cover6Name} FEL idő (s)"
     id: up_time_s_06
     unit_of_measurement: "s"
     mode: BOX
@@ -458,7 +477,7 @@ number:
       - lambda: |-
           id(shutter_raw_06).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 06 LE idő (s)"
+    name: "${cover6Name} LE idő (s)"
     id: down_time_s_06
     unit_of_measurement: "s"
     mode: BOX
@@ -472,7 +491,7 @@ number:
       - lambda: |-
           id(shutter_raw_06).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 06 töréspont – nyitottság (%)"
+    name: "${cover6Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_06
     unit_of_measurement: "%"
     mode: BOX
@@ -485,7 +504,7 @@ number:
 
   # --- Redőny 07 ---
   - platform: template
-    name: "Redőny 07 FEL idő (s)"
+    name: "${cover7Name} FEL idő (s)"
     id: up_time_s_07
     unit_of_measurement: "s"
     mode: BOX
@@ -499,7 +518,7 @@ number:
       - lambda: |-
           id(shutter_raw_07).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 07 LE idő (s)"
+    name: "${cover7Name} LE idő (s)"
     id: down_time_s_07
     unit_of_measurement: "s"
     mode: BOX
@@ -513,7 +532,7 @@ number:
       - lambda: |-
           id(shutter_raw_07).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 07 töréspont – nyitottság (%)"
+    name: "${cover7Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_07
     unit_of_measurement: "%"
     mode: BOX
@@ -526,7 +545,7 @@ number:
 
   # --- Redőny 08 ---
   - platform: template
-    name: "Redőny 08 FEL idő (s)"
+    name: "${cover8Name} FEL idő (s)"
     id: up_time_s_08
     unit_of_measurement: "s"
     mode: BOX
@@ -540,7 +559,7 @@ number:
       - lambda: |-
           id(shutter_raw_08).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 08 LE idő (s)"
+    name: "${cover8Name} LE idő (s)"
     id: down_time_s_08
     unit_of_measurement: "s"
     mode: BOX
@@ -554,7 +573,7 @@ number:
       - lambda: |-
           id(shutter_raw_08).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 08 töréspont – nyitottság (%)"
+    name: "${cover8Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_08
     unit_of_measurement: "%"
     mode: BOX
@@ -567,7 +586,7 @@ number:
 
   # --- Redőny 09 ---
   - platform: template
-    name: "Redőny 09 FEL idő (s)"
+    name: "${cover9Name} FEL idő (s)"
     id: up_time_s_09
     unit_of_measurement: "s"
     mode: BOX
@@ -581,7 +600,7 @@ number:
       - lambda: |-
           id(shutter_raw_09).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 09 LE idő (s)"
+    name: "${cover9Name} LE idő (s)"
     id: down_time_s_09
     unit_of_measurement: "s"
     mode: BOX
@@ -595,7 +614,7 @@ number:
       - lambda: |-
           id(shutter_raw_09).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 09 töréspont – nyitottság (%)"
+    name: "${cover9Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_09
     unit_of_measurement: "%"
     mode: BOX
@@ -608,7 +627,7 @@ number:
 
   # --- Redőny 10 ---
   - platform: template
-    name: "Redőny 10 FEL idő (s)"
+    name: "${cover10Name} FEL idő (s)"
     id: up_time_s_10
     unit_of_measurement: "s"
     mode: BOX
@@ -622,7 +641,7 @@ number:
       - lambda: |-
           id(shutter_raw_10).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 10 LE idő (s)"
+    name: "${cover10Name} LE idő (s)"
     id: down_time_s_10
     unit_of_measurement: "s"
     mode: BOX
@@ -636,7 +655,7 @@ number:
       - lambda: |-
           id(shutter_raw_10).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 10 töréspont – nyitottság (%)"
+    name: "${cover10Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_10
     unit_of_measurement: "%"
     mode: BOX
@@ -649,7 +668,7 @@ number:
 
   # --- Redőny 11 ---
   - platform: template
-    name: "Redőny 11 FEL idő (s)"
+    name: "${cover11Name} FEL idő (s)"
     id: up_time_s_11
     unit_of_measurement: "s"
     mode: BOX
@@ -663,7 +682,7 @@ number:
       - lambda: |-
           id(shutter_raw_11).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 11 LE idő (s)"
+    name: "${cover11Name} LE idő (s)"
     id: down_time_s_11
     unit_of_measurement: "s"
     mode: BOX
@@ -677,7 +696,7 @@ number:
       - lambda: |-
           id(shutter_raw_11).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 11 töréspont – nyitottság (%)"
+    name: "${cover11Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_11
     unit_of_measurement: "%"
     mode: BOX
@@ -690,7 +709,7 @@ number:
 
   # --- Redőny 12 ---
   - platform: template
-    name: "Redőny 12 FEL idő (s)"
+    name: "${cover12Name} FEL idő (s)"
     id: up_time_s_12
     unit_of_measurement: "s"
     mode: BOX
@@ -704,7 +723,7 @@ number:
       - lambda: |-
           id(shutter_raw_12).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 12 LE idő (s)"
+    name: "${cover12Name} LE idő (s)"
     id: down_time_s_12
     unit_of_measurement: "s"
     mode: BOX
@@ -718,7 +737,7 @@ number:
       - lambda: |-
           id(shutter_raw_12).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 12 töréspont – nyitottság (%)"
+    name: "${cover12Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_12
     unit_of_measurement: "%"
     mode: BOX
@@ -731,7 +750,7 @@ number:
 
   # --- Redőny 13 ---
   - platform: template
-    name: "Redőny 13 FEL idő (s)"
+    name: "${cover13Name} FEL idő (s)"
     id: up_time_s_13
     unit_of_measurement: "s"
     mode: BOX
@@ -745,7 +764,7 @@ number:
       - lambda: |-
           id(shutter_raw_13).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 13 LE idő (s)"
+    name: "${cover13Name} LE idő (s)"
     id: down_time_s_13
     unit_of_measurement: "s"
     mode: BOX
@@ -759,7 +778,7 @@ number:
       - lambda: |-
           id(shutter_raw_13).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 13 töréspont – nyitottság (%)"
+    name: "${cover13Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_13
     unit_of_measurement: "%"
     mode: BOX
@@ -769,10 +788,9 @@ number:
     optimistic: true
     restore_value: true
     initial_value: 30
-
   # --- Redőny 14 ---
   - platform: template
-    name: "Redőny 14 FEL idő (s)"
+    name: "${cover14Name} FEL idő (s)"
     id: up_time_s_14
     unit_of_measurement: "s"
     mode: BOX
@@ -786,7 +804,7 @@ number:
       - lambda: |-
           id(shutter_raw_14).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 14 LE idő (s)"
+    name: "${cover14Name} LE idő (s)"
     id: down_time_s_14
     unit_of_measurement: "s"
     mode: BOX
@@ -800,7 +818,7 @@ number:
       - lambda: |-
           id(shutter_raw_14).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 14 töréspont – nyitottság (%)"
+    name: "${cover14Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_14
     unit_of_measurement: "%"
     mode: BOX
@@ -810,10 +828,9 @@ number:
     optimistic: true
     restore_value: true
     initial_value: 30
-
   # --- Redőny 15 ---
   - platform: template
-    name: "Redőny 15 FEL idő (s)"
+    name: "${cover15Name} FEL idő (s)"
     id: up_time_s_15
     unit_of_measurement: "s"
     mode: BOX
@@ -827,7 +844,7 @@ number:
       - lambda: |-
           id(shutter_raw_15).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 15 LE idő (s)"
+    name: "${cover15Name} LE idő (s)"
     id: down_time_s_15
     unit_of_measurement: "s"
     mode: BOX
@@ -841,7 +858,7 @@ number:
       - lambda: |-
           id(shutter_raw_15).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 15 töréspont – nyitottság (%)"
+    name: "${cover15Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_15
     unit_of_measurement: "%"
     mode: BOX
@@ -851,10 +868,9 @@ number:
     optimistic: true
     restore_value: true
     initial_value: 30
-
   # --- Redőny 16 ---
   - platform: template
-    name: "Redőny 16 FEL idő (s)"
+    name: "${cover16Name} FEL idő (s)"
     id: up_time_s_16
     unit_of_measurement: "s"
     mode: BOX
@@ -868,7 +884,7 @@ number:
       - lambda: |-
           id(shutter_raw_16).set_open_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 16 LE idő (s)"
+    name: "${cover16Name} LE idő (s)"
     id: down_time_s_16
     unit_of_measurement: "s"
     mode: BOX
@@ -882,7 +898,7 @@ number:
       - lambda: |-
           id(shutter_raw_16).set_close_duration((uint32_t)(x * 1000));
   - platform: template
-    name: "Redőny 16 töréspont – nyitottság (%)"
+    name: "${cover16Name} töréspont – nyitottság (%)"
     id: knee_raw_open_pc_16
     unit_of_measurement: "%"
     mode: BOX
@@ -892,6 +908,7 @@ number:
     optimistic: true
     restore_value: true
     initial_value: 30
+
 
 #########################
 ### COVERS (NYERS + LOGIKAI) ###
@@ -917,7 +934,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_01
-    name: 'Cover 01'
+    name: ${cover1Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_01).position;
@@ -948,7 +965,6 @@ cover:
     close_action: [ cover.close: shutter_raw_01 ]
     stop_action:  [ cover.stop:  shutter_raw_01 ]
     assumed_state: true
-
   # ===== REDŐNY 2 =====
   - platform: time_based
     id: shutter_raw_02
@@ -969,7 +985,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_02
-    name: 'Cover 02'
+    name: ${cover2Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_02).position;
@@ -1000,7 +1016,6 @@ cover:
     close_action: [ cover.close: shutter_raw_02 ]
     stop_action:  [ cover.stop:  shutter_raw_02 ]
     assumed_state: true
-
   # ===== REDŐNY 3 =====
   - platform: time_based
     id: shutter_raw_03
@@ -1021,7 +1036,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_03
-    name: 'Cover 03'
+    name: ${cover3Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_03).position;
@@ -1052,7 +1067,6 @@ cover:
     close_action: [ cover.close: shutter_raw_03 ]
     stop_action:  [ cover.stop:  shutter_raw_03 ]
     assumed_state: true
-
   # ===== REDŐNY 4 =====
   - platform: time_based
     id: shutter_raw_04
@@ -1073,7 +1087,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_04
-    name: 'Cover 04'
+    name: ${cover4Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_04).position;
@@ -1104,7 +1118,6 @@ cover:
     close_action: [ cover.close: shutter_raw_04 ]
     stop_action:  [ cover.stop:  shutter_raw_04 ]
     assumed_state: true
-
   # ===== REDŐNY 5 =====
   - platform: time_based
     id: shutter_raw_05
@@ -1125,7 +1138,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_05
-    name: 'Cover 05'
+    name: ${cover5Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_05).position;
@@ -1156,7 +1169,6 @@ cover:
     close_action: [ cover.close: shutter_raw_05 ]
     stop_action:  [ cover.stop:  shutter_raw_05 ]
     assumed_state: true
-
   # ===== REDŐNY 6 =====
   - platform: time_based
     id: shutter_raw_06
@@ -1177,7 +1189,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_06
-    name: 'Cover 06'
+    name: ${cover6Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_06).position;
@@ -1208,7 +1220,6 @@ cover:
     close_action: [ cover.close: shutter_raw_06 ]
     stop_action:  [ cover.stop:  shutter_raw_06 ]
     assumed_state: true
-
   # ===== REDŐNY 7 =====
   - platform: time_based
     id: shutter_raw_07
@@ -1229,7 +1240,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_07
-    name: 'Cover 07'
+    name: ${cover7Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_07).position;
@@ -1260,7 +1271,6 @@ cover:
     close_action: [ cover.close: shutter_raw_07 ]
     stop_action:  [ cover.stop:  shutter_raw_07 ]
     assumed_state: true
-
   # ===== REDŐNY 8 =====
   - platform: time_based
     id: shutter_raw_08
@@ -1281,7 +1291,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_08
-    name: 'Cover 08'
+    name: ${cover8Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_08).position;
@@ -1312,7 +1322,6 @@ cover:
     close_action: [ cover.close: shutter_raw_08 ]
     stop_action:  [ cover.stop:  shutter_raw_08 ]
     assumed_state: true
-
   # ===== REDŐNY 9 =====
   - platform: time_based
     id: shutter_raw_09
@@ -1333,7 +1342,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_09
-    name: 'Cover 09'
+    name: ${cover9Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_09).position;
@@ -1364,7 +1373,6 @@ cover:
     close_action: [ cover.close: shutter_raw_09 ]
     stop_action:  [ cover.stop:  shutter_raw_09 ]
     assumed_state: true
-
   # ===== REDŐNY 10 =====
   - platform: time_based
     id: shutter_raw_10
@@ -1385,7 +1393,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_10
-    name: 'Cover 10'
+    name: ${cover10Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_10).position;
@@ -1416,7 +1424,6 @@ cover:
     close_action: [ cover.close: shutter_raw_10 ]
     stop_action:  [ cover.stop:  shutter_raw_10 ]
     assumed_state: true
-
   # ===== REDŐNY 11 =====
   - platform: time_based
     id: shutter_raw_11
@@ -1437,7 +1444,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_11
-    name: 'Cover 11'
+    name: ${cover11Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_11).position;
@@ -1468,7 +1475,6 @@ cover:
     close_action: [ cover.close: shutter_raw_11 ]
     stop_action:  [ cover.stop:  shutter_raw_11 ]
     assumed_state: true
-
   # ===== REDŐNY 12 =====
   - platform: time_based
     id: shutter_raw_12
@@ -1489,7 +1495,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_12
-    name: 'Cover 12'
+    name: ${cover12Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_12).position;
@@ -1520,7 +1526,6 @@ cover:
     close_action: [ cover.close: shutter_raw_12 ]
     stop_action:  [ cover.stop:  shutter_raw_12 ]
     assumed_state: true
-
   # ===== REDŐNY 13 =====
   - platform: time_based
     id: shutter_raw_13
@@ -1541,7 +1546,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_13
-    name: 'Cover 13'
+    name: ${cover13Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_13).position;
@@ -1572,7 +1577,6 @@ cover:
     close_action: [ cover.close: shutter_raw_13 ]
     stop_action:  [ cover.stop:  shutter_raw_13 ]
     assumed_state: true
-
   # ===== REDŐNY 14 =====
   - platform: time_based
     id: shutter_raw_14
@@ -1593,7 +1597,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_14
-    name: 'Cover 14'
+    name: ${cover14Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_14).position;
@@ -1624,7 +1628,6 @@ cover:
     close_action: [ cover.close: shutter_raw_14 ]
     stop_action:  [ cover.stop:  shutter_raw_14 ]
     assumed_state: true
-
   # ===== REDŐNY 15 =====
   - platform: time_based
     id: shutter_raw_15
@@ -1645,7 +1648,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_15
-    name: 'Cover 15'
+    name: ${cover15Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_15).position;
@@ -1676,7 +1679,6 @@ cover:
     close_action: [ cover.close: shutter_raw_15 ]
     stop_action:  [ cover.stop:  shutter_raw_15 ]
     assumed_state: true
-
   # ===== REDŐNY 16 =====
   - platform: time_based
     id: shutter_raw_16
@@ -1697,7 +1699,7 @@ cover:
     assumed_state: true
   - platform: template
     id: shutter_16
-    name: 'Cover 16'
+    name: ${cover16Name}
     has_position: true
     lambda: |-
       float raw_open = id(shutter_raw_16).position;
@@ -1729,10 +1731,12 @@ cover:
     stop_action:  [ cover.stop:  shutter_raw_16 ]
     assumed_state: true
 
+
 #########################
 ### BINÁRIS BEMENETEK ###
 #########################
 binary_sensor:
+    # VEZÉRLŐN LÉVŐ GOMB
   - platform: gpio
     entity_category: config
     id: boneIO_button
@@ -1766,16 +1770,9 @@ binary_sensor:
                     - component.update: oled_display
           # restart screensaver script
         - script.execute: screensaver_script
-
-
-
-
-
-
-
   # REDŐNY 1
   - platform: gpio
-    name: 'IN_01'
+    name: '${cover1Name} IN_01'
     id: in_01
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1799,7 +1796,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_01
   - platform: gpio
-    name: 'IN_02'
+    name: '${cover1Name} IN_02'
     id: in_02
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1822,10 +1819,9 @@ binary_sensor:
                     - cover.stop: shutter_01
                     - delay: 200ms
               - cover.close: shutter_01
-
   # REDŐNY 2
   - platform: gpio
-    name: 'IN_03'
+    name: '${cover2Name} IN_03'
     id: in_03
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1849,7 +1845,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_02
   - platform: gpio
-    name: 'IN_04'
+    name: '${cover2Name} IN_04'
     id: in_04
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1872,10 +1868,9 @@ binary_sensor:
                     - cover.stop: shutter_02
                     - delay: 200ms
               - cover.close: shutter_02
-
   # REDŐNY 3
   - platform: gpio
-    name: 'IN_05'
+    name: '${cover3Name} IN_05'
     id: in_05
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1899,7 +1894,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_03
   - platform: gpio
-    name: 'IN_06'
+    name: '${cover3Name} IN_06'
     id: in_06
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1922,10 +1917,9 @@ binary_sensor:
                     - cover.stop: shutter_03
                     - delay: 200ms
               - cover.close: shutter_03
-
   # REDŐNY 4
   - platform: gpio
-    name: 'IN_07'
+    name: '${cover4Name} IN_07'
     id: in_07
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1949,7 +1943,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_04
   - platform: gpio
-    name: 'IN_08'
+    name: '${cover4Name} IN_08'
     id: in_08
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1972,10 +1966,9 @@ binary_sensor:
                     - cover.stop: shutter_04
                     - delay: 200ms
               - cover.close: shutter_04
-
   # REDŐNY 5
   - platform: gpio
-    name: 'IN_09'
+    name: '${cover5Name} IN_09'
     id: in_09
     pin:
       pcf8574: pcf_inputs_1to14
@@ -1999,7 +1992,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_05
   - platform: gpio
-    name: 'IN_10'
+    name: '${cover5Name} IN_10'
     id: in_10
     pin:
       pcf8574: pcf_inputs_1to14
@@ -2022,10 +2015,9 @@ binary_sensor:
                     - cover.stop: shutter_05
                     - delay: 200ms
               - cover.close: shutter_05
-
   # REDŐNY 6
   - platform: gpio
-    name: 'IN_11'
+    name: '${cover6Name} IN_11'
     id: in_11
     pin:
       pcf8574: pcf_inputs_1to14
@@ -2049,7 +2041,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_06
   - platform: gpio
-    name: 'IN_12'
+    name: '${cover6Name} IN_12'
     id: in_12
     pin:
       pcf8574: pcf_inputs_1to14
@@ -2072,10 +2064,9 @@ binary_sensor:
                     - cover.stop: shutter_06
                     - delay: 200ms
               - cover.close: shutter_06
-
   # REDŐNY 7
   - platform: gpio
-    name: 'IN_13'
+    name: '${cover7Name} IN_13'
     id: in_13
     pin:
       pcf8574: pcf_inputs_1to14
@@ -2099,7 +2090,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_07
   - platform: gpio
-    name: 'IN_14'
+    name: '${cover7Name} IN_14'
     id: in_14
     pin:
       pcf8574: pcf_inputs_1to14
@@ -2122,10 +2113,9 @@ binary_sensor:
                     - cover.stop: shutter_07
                     - delay: 200ms
               - cover.close: shutter_07
-
   # REDŐNY 8
   - platform: gpio
-    name: 'IN_15'
+    name: '${cover8Name}'
     id: in_15
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2149,7 +2139,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_08
   - platform: gpio
-    name: 'IN_16'
+    name: '${cover8Name} IN_16'
     id: in_16
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2172,10 +2162,9 @@ binary_sensor:
                     - cover.stop: shutter_08
                     - delay: 200ms
               - cover.close: shutter_08
-
   # REDŐNY 9
   - platform: gpio
-    name: 'IN_17'
+    name: '${cover9Name} IN_17'
     id: in_17
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2199,7 +2188,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_09
   - platform: gpio
-    name: 'IN_18'
+    name: '${cover9Name} IN_18'
     id: in_18
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2222,10 +2211,9 @@ binary_sensor:
                     - cover.stop: shutter_09
                     - delay: 200ms
               - cover.close: shutter_09
-
   # REDŐNY 10
   - platform: gpio
-    name: 'IN_19'
+    name: '${cover10Name} IN_19'
     id: in_19
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2249,7 +2237,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_10
   - platform: gpio
-    name: 'IN_20'
+    name: '${cover10Name} IN_20'
     id: in_20
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2272,10 +2260,9 @@ binary_sensor:
                     - cover.stop: shutter_10
                     - delay: 200ms
               - cover.close: shutter_10
-
   # REDŐNY 11
   - platform: gpio
-    name: 'IN_21'
+    name: '${cover11Name} IN_21'
     id: in_21
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2299,7 +2286,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_11
   - platform: gpio
-    name: 'IN_22'
+    name: '${cover11Name} IN_22'
     id: in_22
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2322,10 +2309,9 @@ binary_sensor:
                     - cover.stop: shutter_11
                     - delay: 200ms
               - cover.close: shutter_11
-
   # REDŐNY 12
   - platform: gpio
-    name: 'IN_23'
+    name: '${cover12Name} IN_23'
     id: in_23
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2349,7 +2335,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_12
   - platform: gpio
-    name: 'IN_24'
+    name: '${cover12Name} IN_24'
     id: in_24
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2372,10 +2358,9 @@ binary_sensor:
                     - cover.stop: shutter_12
                     - delay: 200ms
               - cover.close: shutter_12
-
   # REDŐNY 13
   - platform: gpio
-    name: 'IN_25'
+    name: '${cover13Name} IN_25'
     id: in_25
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2399,7 +2384,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_13
   - platform: gpio
-    name: 'IN_26'
+    name: '${cover13Name} IN_26'
     id: in_26
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2422,10 +2407,9 @@ binary_sensor:
                     - cover.stop: shutter_13
                     - delay: 200ms
               - cover.close: shutter_13
-
   # REDŐNY 14
   - platform: gpio
-    name: 'IN_27'
+    name: '${cover14Name} IN_27'
     id: in_27
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2449,7 +2433,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_14
   - platform: gpio
-    name: 'IN_28'
+    name: '${cover14Name} IN_28'
     id: in_28
     pin:
       pcf8574: pcf_inputs_15to28
@@ -2472,10 +2456,9 @@ binary_sensor:
                     - cover.stop: shutter_14
                     - delay: 200ms
               - cover.close: shutter_14
-
   # REDŐNY 15
   - platform: gpio
-    name: 'IN_29'
+    name: '${cover15Name} IN_29'
     id: in_29
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -2499,7 +2482,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_15
   - platform: gpio
-    name: 'IN_30'
+    name: '${cover15Name} IN_30'
     id: in_30
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -2522,10 +2505,9 @@ binary_sensor:
                     - cover.stop: shutter_15
                     - delay: 200ms
               - cover.close: shutter_15
-
   # REDŐNY 16
   - platform: gpio
-    name: 'IN_31'
+    name: '${cover16Name} IN_31'
     id: in_31
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -2549,7 +2531,7 @@ binary_sensor:
                     - delay: 200ms
               - cover.open: shutter_16
   - platform: gpio
-    name: 'IN_32'
+    name: '${cover16Name} IN_32'
     id: in_32
     pin:
       pcf8574: pcf_inputs_28to35_menu
@@ -2600,7 +2582,6 @@ binary_sensor:
 ### KIMENETI RELÉK (változatlan) ###
 #########################
 switch:
-
   - platform: gpio
     id: buzzer
     name: 'Buzzer'
@@ -2609,50 +2590,45 @@ switch:
       mode:
         output: true
       inverted: false
-
-
-
   # --- REDŐNY 1 ---
   - platform: gpio
     id: cover_open_01_out01
-    name: Redőny1 relé1
+    name: ${cover1Name} relé1
     pin: { pcf8574: pcf_left, number: 15, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_01 [cover_open_01_out01, cover_close_01_out02]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_01_out02
-    name: Redőny1 relé2
+    name: ${cover1Name} relé2
     pin: { pcf8574: pcf_left, number: 14, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_01
     restore_mode: always off
-
   # --- REDŐNY 2 ---
   - platform: gpio
     id: cover_open_02_out03
-    name: Redőny2 relé1
+    name: ${cover2Name} relé1
     pin: { pcf8574: pcf_left, number: 13, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_02 [cover_open_02_out03, cover_close_02_out04]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_02_out04
-    name: Redőny2 relé2
+    name: ${cover2Name} relé2
     pin: { pcf8574: pcf_left, number: 12, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_02
     restore_mode: always off
-
   # --- REDŐNY 3 ---
   - platform: gpio
     id: cover_open_03_out05
-    name: Redőny3 relé1
+    name: ${cover3Name} relé1
     pin: { pcf8574: pcf_left, number: 11, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_03 [cover_open_03_out05, cover_close_03_out06]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_03_out06
-    name: Redőny3 relé2
+    name: ${cover3Name} relé2
     pin: { pcf8574: pcf_left, number: 10, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_03
     restore_mode: always off
@@ -2660,74 +2636,70 @@ switch:
   # --- REDŐNY 4 ---
   - platform: gpio
     id: cover_open_04_out07
-    name: Redőny4 relé1
+    name: ${cover4Name} relé1
     pin: { pcf8574: pcf_left, number: 9, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_04 [cover_open_04_out07, cover_close_04_out08]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_04_out08
-    name: Redőny4 relé2
+    name: ${cover4Name} relé2
     pin: { pcf8574: pcf_left, number: 8, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_04
     restore_mode: always off
-
   # --- REDŐNY 5 ---
   - platform: gpio
     id: cover_open_05_out09
-    name: Redőny5 relé1
+    name: ${cover5Name} relé1
     pin: { pcf8574: pcf_right, number: 15, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_05 [cover_open_05_out09, cover_close_05_out10]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_05_out10
-    name: Redőny5 relé2
+    name: ${cover5Name} relé2
     pin: { pcf8574: pcf_right, number: 14, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_05
     restore_mode: always off
-
   # --- REDŐNY 6 ---
   - platform: gpio
     id: cover_open_06_out11
-    name: Redőny6 relé1
+    name: ${cover6Name} relé1
     pin: { pcf8574: pcf_right, number: 13, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_06 [cover_open_06_out11, cover_close_06_out12]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_06_out12
-    name: Redőny6 relé2
+    name: ${cover6Name} relé2
     pin: { pcf8574: pcf_right, number: 12, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_06
     restore_mode: always off
-
   # --- REDŐNY 7 ---
   - platform: gpio
     id: cover_open_07_out13
-    name: Redőny7 relé1
+    name: ${cover7Name} relé1
     pin: { pcf8574: pcf_right, number: 11, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_07 [cover_open_07_out13, cover_close_07_out14]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_07_out14
-    name: Redőny7 relé2
+    name: ${cover7Name} relé2
     pin: { pcf8574: pcf_right, number: 10, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_07
     restore_mode: always off
-
   # --- REDŐNY 8 ---
   - platform: gpio
     id: cover_open_08_out15
-    name: Redőny8 relé1
+    name: ${cover8Name} relé1
     pin: { pcf8574: pcf_right, number: 9, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_08 [cover_open_08_out15, cover_close_08_out16]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_08_out16
-    name: Redőny8 relé2
+    name: ${cover8Name} relé2
     pin: { pcf8574: pcf_right, number: 8, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_08
     restore_mode: always off
@@ -2735,124 +2707,115 @@ switch:
   # --- REDŐNY 9 ---
   - platform: gpio
     id: cover_open_09_out17
-    name: Redőny9 relé1
+    name: ${cover9Name} relé1
     pin: { pcf8574: pcf_left, number: 0, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_09 [cover_open_09_out17, cover_close_09_out18]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_09_out18
-    name: Redőny9 relé2
+    name: ${cover9Name} relé2
     pin: { pcf8574: pcf_left, number: 1, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_09
     restore_mode: always off
-
   # --- REDŐNY 10 ---
   - platform: gpio
     id: cover_open_10_out19
-    name: Redőny10 relé1
+    name: ${cover10Name} relé1
     pin: { pcf8574: pcf_left, number: 2, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_10 [cover_open_10_out19, cover_close_10_out20]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_10_out20
-    name: Redőny10 relé2
+    name: ${cover10Name} relé2
     pin: { pcf8574: pcf_left, number: 3, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_10
     restore_mode: always off
-
   # --- REDŐNY 11 ---
   - platform: gpio
     id: cover_open_11_out21
-    name: Redőny11 relé1
+    name: ${cover11Name} relé1
     pin: { pcf8574: pcf_left, number: 4, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_11 [cover_open_11_out21, cover_close_11_out22]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_11_out22
-    name: Redőny11 relé2
+    name: ${cover11Name} relé2
     pin: { pcf8574: pcf_left, number: 5, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_11
     restore_mode: always off
-
   # --- REDŐNY 12 ---
   - platform: gpio
     id: cover_open_12_out23
-    name: Redőny12 relé1
+    name: ${cover12Name} relé1
     pin: { pcf8574: pcf_left, number: 6, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_12 [cover_open_12_out23, cover_close_12_out24]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_12_out24
-    name: Redőny12 relé2
+    name: ${cover12Name} relé2
     pin: { pcf8574: pcf_left, number: 7, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_12
     restore_mode: always off
-
   # --- REDŐNY 13 ---
   - platform: gpio
     id: cover_open_13_out25
-    name: Redőny13 relé1
+    name: ${cover13Name} relé1
     pin: { pcf8574: pcf_right, number: 0, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_13 [cover_open_13_out25, cover_close_13_out26]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_13_out26
-    name: Redőny13 relé2
+    name: ${cover13Name} relé2
     pin: { pcf8574: pcf_right, number: 1, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_13
     restore_mode: always off
-
   # --- REDŐNY 14 ---
   - platform: gpio
     id: cover_open_14_out27
-    name: Redőny14 relé1
+    name: ${cover14Name} relé1
     pin: { pcf8574: pcf_right, number: 2, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_14 [cover_open_14_out27, cover_close_14_out28]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_14_out28
-    name: Redőny14 relé2
+    name: ${cover14Name} relé2
     pin: { pcf8574: pcf_right, number: 3, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_14
     restore_mode: always off
-
   # --- REDŐNY 15 ---
   - platform: gpio
     id: cover_open_15_out29
-    name: Redőny15 relé1
+    name: ${cover15Name} relé1
     pin: { pcf8574: pcf_right, number: 4, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_15 [cover_open_15_out29, cover_close_15_out30]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_15_out30
-    name: Redőny15 relé2
+    name: ${cover15Name} relé2
     pin: { pcf8574: pcf_right, number: 5, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_15
     restore_mode: always off
-
   # --- REDŐNY 16 ---
   - platform: gpio
     id: cover_open_16_out31
-    name: Redőny16 relé1
+    name: ${cover16Name} relé1
     pin: { pcf8574: pcf_right, number: 6, mode: { output: true }, inverted: true }
     interlock: &cover_interlock_16 [cover_open_16_out31, cover_close_16_out32]
     interlock_wait_time: 5ms
     restore_mode: always off
   - platform: gpio
     id: cover_close_16_out32
-    name: Redőny16 relé2
+    name: ${cover16Name} relé2
     pin: { pcf8574: pcf_right, number: 7, mode: { output: true }, inverted: true }
     interlock: *cover_interlock_16
     restore_mode: always off
-
-
 
 
 text_sensor:
@@ -2895,7 +2858,6 @@ sensor:
       - calibrate_linear:
           - 0.00 -> 0.00
           - 3.30 -> 5.00
-
   - platform: adc
     pin: GPIO36           # A_2
     name: "A2 0-10V"
@@ -2910,7 +2872,6 @@ sensor:
       - calibrate_linear:
           - 0.00 -> 0.00
           - 3.30 -> 10.00
-
   - platform: adc
     pin: GPIO35           # A_3
     name: "A3 0-25V"
@@ -2925,7 +2886,6 @@ sensor:
       - calibrate_linear:
           - 0.00 -> 0.00
           - 3.30 -> 25.00
-
   - platform: uptime
     id: wt32_uptime_seconds
     update_interval: 60s
@@ -2969,7 +2929,6 @@ sensor:
     id: boneIO_temp
     name: 'LM75B Temperature'
     update_interval: 30s
-
 ####### ONE WIRE HŐMÉRŐK SABLONJA #######
 #   - platform: dallas
 #     address: 0x283c01d607d4df28
@@ -2983,11 +2942,6 @@ sensor:
 #     address: 0xa7a89f071e64ff28
 #     name: "Dallas Sensor 3"
 
-
-
-
-
-
 script:
   - id: screensaver_script
     # screensaver script, turn on screensaver after 30 seconds, restart counter each time when invoked
@@ -2997,7 +2951,6 @@ script:
       - delay: 30s
       - display.page.show: screensaver
       - component.update: oled_display
-
 
 
 display:
@@ -3033,6 +2986,7 @@ display:
       - id: screensaver
         lambda: |-
           it.fill(COLOR_OFF);
+
 
 font:
   - file: 'gfonts://Ubuntu'
