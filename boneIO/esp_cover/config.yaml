@@ -117,6 +117,7 @@ ota:
 web_server:
   port: 80
   local: true
+  version: 3
 
 preferences:
   flash_write_interval: 5s

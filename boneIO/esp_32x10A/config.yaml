@@ -1,0 +1,1694 @@
+substitutions:
+  name: boneio-32x10
+  serial_prefix: 'esp' #Don't change it.
+
+
+  relay1Name: relay1
+  relay2Name: relay2
+  relay3Name: relay3
+  relay4Name: relay4
+  relay5Name: relay5
+  relay6Name: relay6
+  relay7Name: relay7
+  relay8Name: relay8
+  relay9Name: relay9
+  relay10Name: relay10
+  relay11Name: relay11
+  relay12Name: relay12
+  relay13Name: relay13
+  relay14Name: relay14
+  relay15Name: relay15
+  relay16Name: relay16
+  relay17Name: relay17
+  relay18Name: relay18
+  relay19Name: relay19
+  relay20Name: relay20
+  relay21Name: relay21
+  relay22Name: relay22
+  relay23Name: relay23
+  relay24Name: relay24
+  relay25Name: relay25
+  relay26Name: relay26
+  relay27Name: relay27
+  relay28Name: relay28
+  relay29Name: relay29
+  relay30Name: relay30
+  relay31Name: relay31
+  relay32Name: relay32
+
+
+
+esphome:
+  name: '${name}'
+  name_add_mac_suffix: true
+  on_boot:
+    priority: 0
+    then:
+      - display.page.show: first_page
+      - component.update: ip_address
+      - component.update: oled_display
+      - script.execute: screensaver_script
+
+esp32:
+  board: nodemcu-32s
+  framework:                                                                            
+    type: esp-idf
+
+ethernet:
+  id: eth
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk:
+    pin: GPIO0
+    mode: CLK_EXT_IN
+  phy_addr: 1
+  power_pin: GPIO16
+
+
+
+
+logger:
+api:
+  reboot_timeout: 0s
+ota:
+  - platform: esphome
+  - platform: web_server
+
+
+web_server:
+  port: 80
+  local: true
+  version: 3
+
+
+time:
+  - platform: homeassistant
+    timezone: Europe/Budapest
+    id: homeassistant_time
+
+external_components:
+  - source: github://energysmarthome/esphome-LM75@main #Original source and thank you note for BTomala
+    components: [lm75]
+
+
+pcf8574:
+  - id: 'pcf_inputs_1to14'
+    i2c_id: i2c_bus
+    address: 0x20
+    pcf8575: true
+  - id: 'pcf_inputs_15to28'
+    i2c_id: i2c_bus
+    address: 0x21
+    pcf8575: true
+  - id: 'pcf_inputs_28to35_menu'
+    i2c_id: i2c_bus
+    address: 0x22
+    pcf8575: false
+  - id: 'pcf_left'
+    address: 0x23
+    pcf8575: true
+    i2c_id: i2c_bus
+  - id: 'pcf_right'
+    address: 0x24
+    pcf8575: true
+    i2c_id: i2c_bus
+
+
+
+i2c:
+  - id: i2c_bus
+    sda: GPIO17
+    scl: GPIO33
+    scan: True
+    frequency: 400kHz
+
+
+
+one_wire:
+  - platform: gpio
+    pin: GPIO32
+# sensor:
+#   - platform: dallas
+#     address: 0x283c01d607d4df28
+#     name: "Dallas Sensor 1"
+#
+#   - platform: dallas
+#     address: 0xdfe67a061e64ff28
+#     name: "Dallas Sensor 2"
+#
+#   - platform: dallas
+#     address: 0xa7a89f071e64ff28
+#     name: "Dallas Sensor 3"
+
+switch:
+  - platform: gpio
+    id: buzzer
+    name: 'Buzzer'
+    pin:
+      number: GPIO2
+      mode:
+        output: true
+      inverted: false
+  - platform: output
+    name: '${relay1Name}'
+    output: out_01
+    id: switch_01
+  - platform: output
+    name: '${relay2Name}'
+    output: out_02
+    id: switch_02
+  - platform: output
+    name: '${relay3Name}'
+    output: out_03
+    id: switch_03
+  - platform: output
+    name: '${relay4Name}'
+    output: out_04
+    id: switch_04
+  - platform: output
+    name: '${relay5Name}'
+    output: out_05
+    id: switch_05
+  - platform: output
+    name: '${relay6Name}'
+    output: out_06
+    id: switch_06
+  - platform: output
+    name: '${relay7Name}'
+    output: out_07
+    id: switch_07
+  - platform: output
+    name: '${relay8Name}'
+    output: out_08
+    id: switch_08
+  - platform: output
+    name: '${relay9Name}'
+    output: out_09
+    id: switch_09
+  - platform: output
+    name: '${relay10Name}'
+    output: out_10
+    id: switch_10
+  - platform: output
+    name: '${relay11Name}'
+    output: out_11
+    id: switch_11
+  - platform: output
+    name: '${relay12Name}'
+    output: out_12
+    id: switch_12
+  - platform: output
+    name: '${relay13Name}'
+    output: out_13
+    id: switch_13
+  - platform: output
+    name: '${relay14Name}'
+    output: out_14
+    id: switch_14
+  - platform: output
+    name: '${relay15Name}'
+    output: out_15
+    id: switch_15
+  - platform: output
+    name: '${relay16Name}'
+    output: out_16
+    id: switch_16
+  - platform: output
+    name: '${relay17Name}'
+    output: out_17
+    id: switch_17
+  - platform: output
+    name: '${relay18Name}'
+    output: out_18
+    id: switch_18
+  - platform: output
+    name: '${relay19Name}'
+    output: out_19
+    id: switch_19
+  - platform: output
+    name: '${relay20Name}'
+    output: out_20
+    id: switch_20
+  - platform: output
+    name: '${relay21Name}'
+    output: out_21
+    id: switch_21
+  - platform: output
+    name: '${relay22Name}'
+    output: out_22
+    id: switch_22
+  - platform: output
+    name: '${relay23Name}'
+    output: out_23
+    id: switch_23
+  - platform: output
+    name: '${relay24Name}'
+    output: out_24
+    id: switch_24
+  - platform: output
+    name: '${relay25Name}'
+    output: out_25
+    id: switch_25
+  - platform: output
+    name: '${relay26Name}'
+    output: out_26
+    id: switch_26
+  - platform: output
+    name: '${relay27Name}'
+    output: out_27
+    id: switch_27
+  - platform: output
+    name: '${relay28Name}'
+    output: out_28
+    id: switch_28
+  - platform: output
+    name: '${relay29Name}'
+    output: out_29
+    id: switch_29
+  - platform: output
+    name: '${relay30Name}'
+    output: out_30
+    id: switch_30
+  - platform: output
+    name: '${relay31Name}'
+    output: out_31
+    id: switch_31
+  - platform: output
+    name: '${relay32Name}'
+    output: out_32
+    id: switch_32
+
+  # Kapcsolók a bemenet–relé összekötés engedélyezéséhez (állapot megőrzéssel)
+  - platform: template
+    name: 'IN->${relay1Name} link'
+    id: link_01
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay2Name} link'
+    id: link_02
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay3Name} link'
+    id: link_03
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay4Name} link'
+    id: link_04
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay5Name} link'
+    id: link_05
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay6Name} link'
+    id: link_06
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay7Name} link'
+    id: link_07
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay8Name} link'
+    id: link_08
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay9Name} link'
+    id: link_09
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay10Name} link'
+    id: link_10
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay11Name} link'
+    id: link_11
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay12Name} link'
+    id: link_12
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay13Name} link'
+    id: link_13
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay14Name} link'
+    id: link_14
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay15Name} link'
+    id: link_15
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay16Name} link'
+    id: link_16
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay17Name} link'
+    id: link_17
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay18Name} link'
+    id: link_18
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay19Name} link'
+    id: link_19
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay20Name} link'
+    id: link_20
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay21Name} link'
+    id: link_21
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay22Name} link'
+    id: link_22
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay23Name} link'
+    id: link_23
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay24Name} link'
+    id: link_24
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay25Name} link'
+    id: link_25
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay26Name} link'
+    id: link_26
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay27Name} link'
+    id: link_27
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay28Name} link'
+    id: link_28
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay29Name} link'
+    id: link_29
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay30Name} link'
+    id: link_30
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay31Name} link'
+    id: link_31
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    name: 'IN->${relay32Name} link'
+    id: link_32
+    icon: mdi:link
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+binary_sensor:
+
+  - platform: gpio
+    entity_category: config
+    id: boneIO_button
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 7
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        # woke up when on the screensaver, as well do not include the logo page and screensaver in a loop when pushing a button
+        - if:
+            condition:
+              # on the last page go to the first page skipping the screensaver and logo page
+              display.is_displaying_page: last_page
+            then:
+              - display.page.show: first_page
+              - component.update: oled_display
+            else:
+              - if:
+                  condition:
+                    # on the screensaver, show the logo for a while and display the first page
+                    display.is_displaying_page: screensaver
+                  then:
+                    - display.page.show: first_page
+                    - component.update: oled_display
+                  else:
+                    # not the last page and screensaver go to the next page
+                    - display.page.show_next: oled_display
+                    - component.update: oled_display
+          # restart screensaver script
+        - script.execute: screensaver_script
+
+
+
+
+
+  - platform: gpio
+    name: '${relay1Name} IN_01'
+    id: in_01
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 0
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_01
+            then:
+              - switch.toggle: switch_01
+
+  - platform: gpio
+    name: '${relay2Name} IN_02'
+    id: in_02
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 1
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_02
+            then:
+              - switch.toggle: switch_02
+
+  - platform: gpio
+    name: '${relay3Name} IN_03'
+    id: in_03
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 2
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_03
+            then:
+              - switch.toggle: switch_03
+
+  - platform: gpio
+    name: '${relay4Name} IN_04'
+    id: in_04
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 3
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_04
+            then:
+              - switch.toggle: switch_04
+
+  - platform: gpio
+    name: '${relay5Name} IN_05'
+    id: in_05
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 4
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_05
+            then:
+              - switch.toggle: switch_05
+
+  - platform: gpio
+    name: '${relay6Name} IN_06'
+    id: in_06
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 5
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_06
+            then:
+              - switch.toggle: switch_06
+
+  - platform: gpio
+    name: '${relay7Name} IN_07'
+    id: in_07
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 6
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_07
+            then:
+              - switch.toggle: switch_07
+
+  - platform: gpio
+    name: '${relay8Name} IN_08'
+    id: in_08
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 8
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_08
+            then:
+              - switch.toggle: switch_08
+
+  - platform: gpio
+    name: '${relay9Name} IN_09'
+    id: in_09
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 9
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_09
+            then:
+              - switch.toggle: switch_09
+
+  - platform: gpio
+    name: '${relay10Name} IN_10'
+    id: in_10
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 10
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_10
+            then:
+              - switch.toggle: switch_10
+
+  - platform: gpio
+    name: '${relay11Name} IN_11'
+    id: in_11
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 11
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_11
+            then:
+              - switch.toggle: switch_11
+
+  - platform: gpio
+    name: '${relay12Name} IN_12'
+    id: in_12
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 12
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_12
+            then:
+              - switch.toggle: switch_12
+
+  - platform: gpio
+    name: '${relay13Name} IN_13'
+    id: in_13
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 13
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_13
+            then:
+              - switch.toggle: switch_13
+
+  - platform: gpio
+    name: '${relay14Name} IN_14'
+    id: in_14
+    pin:
+      pcf8574: pcf_inputs_1to14
+      number: 14
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_14
+            then:
+              - switch.toggle: switch_14
+
+  - platform: gpio
+    name: '${relay15Name} IN_15'
+    id: in_15
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 6
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_15
+            then:
+              - switch.toggle: switch_15
+
+  - platform: gpio
+    name: '${relay16Name} IN_16'
+    id: in_16
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 5
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_16
+            then:
+              - switch.toggle: switch_16
+
+  - platform: gpio
+    name: '${relay17Name} IN_17'
+    id: in_17
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 4
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_17
+            then:
+              - switch.toggle: switch_17
+
+  - platform: gpio
+    name: '${relay18Name} IN_18'
+    id: in_18
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 3
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_18
+            then:
+              - switch.toggle: switch_18
+
+  - platform: gpio
+    name: '${relay19Name} IN_19'
+    id: in_19
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 2
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_19
+            then:
+              - switch.toggle: switch_19
+
+  - platform: gpio
+    name: '${relay20Name} IN_20'
+    id: in_20
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 1
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_20
+            then:
+              - switch.toggle: switch_20
+
+  - platform: gpio
+    name: '${relay21Name} IN_21'
+    id: in_21
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 0
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_21
+            then:
+              - switch.toggle: switch_21
+
+  - platform: gpio
+    name: '${relay22Name} IN_22'
+    id: in_22
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 8
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_22
+            then:
+              - switch.toggle: switch_22
+
+  - platform: gpio
+    name: '${relay23Name} IN_23'
+    id: in_23
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 9
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_23
+            then:
+              - switch.toggle: switch_23
+
+  - platform: gpio
+    name: '${relay24Name} IN_24'
+    id: in_24
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 10
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_24
+            then:
+              - switch.toggle: switch_24
+
+  - platform: gpio
+    name: '${relay25Name} IN_25'
+    id: in_25
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 11
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_25
+            then:
+              - switch.toggle: switch_25
+
+  - platform: gpio
+    name: '${relay26Name} IN_26'
+    id: in_26
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 12
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_26
+            then:
+              - switch.toggle: switch_26
+
+  - platform: gpio
+    name: '${relay27Name} IN_27'
+    id: in_27
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 13
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_27
+            then:
+              - switch.toggle: switch_27
+
+  - platform: gpio
+    name: '${relay28Name} IN_28'
+    id: in_28
+    pin:
+      pcf8574: pcf_inputs_15to28
+      number: 14
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_28
+            then:
+              - switch.toggle: switch_28
+
+  - platform: gpio
+    name: '${relay29Name} IN_29'
+    id: in_29
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 0
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_29
+            then:
+              - switch.toggle: switch_29
+
+  - platform: gpio
+    name: '${relay30Name} IN_30'
+    id: in_30
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 1
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_30
+            then:
+              - switch.toggle: switch_30
+
+  - platform: gpio
+    name: '${relay31Name} IN_31'
+    id: in_31
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 2
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_31
+            then:
+              - switch.toggle: switch_31
+
+  - platform: gpio
+    name: '${relay32Name} IN_32'
+    id: in_32
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 3
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: link_32
+            then:
+              - switch.toggle: switch_32
+
+  - platform: gpio
+    name: 'IN_33'
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 4
+      mode:
+        input: true
+      inverted: true
+
+  - platform: gpio
+    name: 'IN_34'
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 5
+      mode:
+        input: true
+      inverted: true
+
+  - platform: gpio
+    name: 'IN_35'
+    pin:
+      pcf8574: pcf_inputs_28to35_menu
+      number: 6
+      mode:
+        input: true
+      inverted: true
+######################
+### MODBUS SECTION ###
+######################
+# UNCOMMENT BELOW TO USE MODBUS
+# uart:
+#   id: uart_pin14_15
+#   rx_pin: GPIO14
+#   tx_pin: GPIO15
+#   baud_rate: 9600
+#   stop_bits: 1
+
+# modbus:
+#   send_wait_time: 200ms
+#   uart_id: uart_pin14_15
+#   id: boneio_modbus
+
+# modbus_controller:
+#   - id: YOURDEVICE ID
+#     address: 0x09
+#     modbus_id: mod_bus
+#     setup_priority: -10
+#     update_interval: 60s
+
+
+text_sensor:
+  - platform: template
+    name: 'Serial No.'
+    id: serial_no
+    lambda: |-
+      std::string mac = get_mac_address();
+      return std::string("${serial_prefix}") + mac.substr(mac.length()/2);
+    icon: mdi:expansion-card-variant
+    entity_category: diagnostic
+    update_interval: 60min
+  - platform: template
+    name: Uptime
+    id: wt32_uptime
+    entity_category: diagnostic
+    icon: mdi:clock-start
+  - platform: template
+    name: 'IP Address'
+    id: ip_address
+    entity_category: diagnostic
+    icon: 'mdi:ip-network'
+    lambda: |-
+      return id(eth).get_ip_addresses().empty() ? "Unset" : id(eth).get_ip_addresses()[0].str();
+    update_interval: 60s
+
+sensor:
+  - platform: uptime
+    id: wt32_uptime_seconds
+    update_interval: 60s
+    entity_category: diagnostic
+    on_raw_value:
+      then:
+        - text_sensor.template.publish:
+            id: wt32_uptime
+            state: !lambda |-
+              int seconds = round(id(wt32_uptime_seconds).raw_state);
+              int days = seconds / (24 * 3600);
+              seconds = seconds % (24 * 3600);
+              int hours = seconds / 3600;
+              seconds = seconds % 3600;
+              int minutes = seconds /  60;
+              return (
+                (days ? to_string(days) + "d " : "") +
+                (hours ? to_string(hours) + "h " : "") +
+                (to_string(minutes) + "m")
+              ).c_str();
+  - platform: ina219
+    address: 0x40
+    shunt_resistance: 0.1 ohm
+    current:
+      id: ina_current
+      name: 'INA219 Current'
+    power:
+      id: ina_power
+      name: 'INA219 Power'
+    bus_voltage:
+      id: ina_bus_voltage
+      name: 'INA219 Bus Voltage'
+    shunt_voltage:
+      id: ina_shunt_voltage
+      name: 'INA219 Shunt Voltage'
+    max_voltage: 32.0V
+    max_current: 3.2A
+    update_interval: 30s
+  - platform: lm75
+    id: boneIO_temp
+    name: 'LM75B Temperature'
+    update_interval: 30s
+  - platform: adc
+    pin: GPIO39           # A_1
+    name: "A1 0-5V"
+    attenuation: 12db
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    filters:
+      # 0..3.30 V a lábon -> 0..5.00 V a bemeneten
+      - calibrate_linear:
+          - 0.00 -> 0.00
+          - 3.30 -> 5.00
+  - platform: adc
+    pin: GPIO36           # A_2
+    name: "A2 0-10V"
+    attenuation: 12db
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    filters:
+      # 0..3.30 V a lábon -> 0..10.00 V a bemeneten
+      - calibrate_linear:
+          - 0.00 -> 0.00
+          - 3.30 -> 10.00
+  - platform: adc
+    pin: GPIO35           # A_3
+    name: "A3 0-25V"
+    attenuation: 12db
+    unit_of_measurement: "V"
+    device_class: voltage
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 10s
+    filters:
+      # 0..3.30 V a lábon -> 0..25.00 V a bemeneten
+      - calibrate_linear:
+          - 0.00 -> 0.00
+          - 3.30 -> 25.00
+
+
+
+
+script:
+  - id: screensaver_script
+    # screensaver script, turn on screensaver after 30 seconds, restart counter each time when invoked
+    mode: restart
+    then:
+      # set the time after which the screensaver will be activated
+      - delay: 30s
+      - display.page.show: screensaver
+      - component.update: oled_display
+
+
+
+display:
+  - platform: ssd1306_i2c
+    id: oled_display
+    model: 'SH1106 128x64'
+    address: 0x3C
+    contrast: 0.5
+    pages:
+      - id: first_page
+        lambda: |-
+          it.rectangle(0, 0, 126, 15);
+          it.printf(64,11, id(size_10), TextAlign::BASELINE_CENTER, "bone IO");
+          it.printf(4, 37, id(size_10), TextAlign::BASELINE_LEFT ,"IP addr:");
+          it.printf(124, 37, id(size_10), TextAlign::BASELINE_RIGHT ,"%s", id(ip_address).state.c_str());
+          it.printf(4, 49, id(size_10), TextAlign::BASELINE_LEFT ,"Uptime:");
+          it.printf(124, 49, id(size_10), TextAlign::BASELINE_RIGHT ,"%s", id(wt32_uptime).state.c_str());
+          it.printf(4, 61, id(size_10), TextAlign::BASELINE_LEFT ,"Temperature:");
+          it.printf(124, 61, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2f°C", id(boneIO_temp).state);
+      # additional pages should be defined between the first and last page
+      - id: last_page
+        lambda: |-
+          it.rectangle(0, 0, 126, 15);
+          it.printf(64,11, id(size_10), TextAlign::BASELINE_CENTER, "bone IO");
+          it.printf(4, 25, id(size_10), TextAlign::BASELINE_LEFT ,"Current:");
+          it.printf(124, 25, id(size_10), TextAlign::BASELINE_RIGHT ,"%.3fA", id(ina_current).state);
+          it.printf(4, 37, id(size_10), TextAlign::BASELINE_LEFT ,"Power:");
+          it.printf(124, 37, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2fW", id(ina_power).state);
+          it.printf(4, 49, id(size_10), TextAlign::BASELINE_LEFT ,"Bus Volt:");
+          it.printf(124, 49, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2fV", id(ina_bus_voltage).state);
+          it.printf(4, 61, id(size_10), TextAlign::BASELINE_LEFT ,"Shunt Volt:");
+          it.printf(124, 61, id(size_10), TextAlign::BASELINE_RIGHT ,"%.2fV", id(ina_shunt_voltage).state);
+      - id: screensaver
+        lambda: |-
+          it.fill(COLOR_OFF);
+
+font:
+  - file: 'gfonts://Ubuntu'
+    id: size_10
+    size: 10
+
+
+output:
+  - platform: gpio
+    id: out_01
+    pin:
+      pcf8574: pcf_left
+      number: 15
+      mode:
+        output: true
+      inverted: true
+  - platform: gpio
+    id: out_02
+    pin:
+      pcf8574: pcf_left
+      number: 14
+      mode:
+        output: true
+      inverted: true
+  - platform: gpio
+    id: out_03
+    pin:
+      pcf8574: pcf_left
+      number: 13
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_04
+    pin:
+      pcf8574: pcf_left
+      number: 12
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_05
+    pin:
+      pcf8574: pcf_left
+      number: 11
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_06
+    pin:
+      pcf8574: pcf_left
+      number: 10
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_07
+    pin:
+      pcf8574: pcf_left
+      number: 9
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_08
+    pin:
+      pcf8574: pcf_left
+      number: 8
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_09
+    pin:
+      pcf8574: pcf_right
+      number: 15
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_10
+    pin:
+      pcf8574: pcf_right
+      number: 14
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_11
+    pin:
+      pcf8574: pcf_right
+      number: 13
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_12
+    pin:
+      pcf8574: pcf_right
+      number: 12
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_13
+    pin:
+      pcf8574: pcf_right
+      number: 11
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_14
+    pin:
+      pcf8574: pcf_right
+      number: 10
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_15
+    pin:
+      pcf8574: pcf_right
+      number: 9
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_16
+    pin:
+      pcf8574: pcf_right
+      number: 8
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_17
+    pin:
+      pcf8574: pcf_left
+      number: 0
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_18
+    pin:
+      pcf8574: pcf_left
+      number: 1
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_19
+    pin:
+      pcf8574: pcf_left
+      number: 2
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_20
+    pin:
+      pcf8574: pcf_left
+      number: 3
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_21
+    pin:
+      pcf8574: pcf_left
+      number: 4
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_22
+    pin:
+      pcf8574: pcf_left
+      number: 5
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_23
+    pin:
+      pcf8574: pcf_left
+      number: 6
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_24
+    pin:
+      pcf8574: pcf_left
+      number: 7
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_25
+    pin:
+      pcf8574: pcf_right
+      number: 0
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_26
+    pin:
+      pcf8574: pcf_right
+      number: 1
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_27
+    pin:
+      pcf8574: pcf_right
+      number: 2
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_28
+    pin:
+      pcf8574: pcf_right
+      number: 3
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_29
+    pin:
+      pcf8574: pcf_right
+      number: 4
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_30
+    pin:
+      pcf8574: pcf_right
+      number: 5
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_31
+    pin:
+      pcf8574: pcf_right
+      number: 6
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    id: out_32
+    pin:
+      pcf8574: pcf_right
+      number: 7
+      mode:
+        output: true
+      inverted: true
+
+
+
+
+# LIGHT-ek: mindegyik ugyanarra az output-ra (bináris fény)
+# light:
+#   - platform: binary
+#     name: '${relay1Name} (light)'
+#     id: light_01
+#     output: out_01
+#   - platform: binary
+#     name: '${relay2Name} (light)'
+#     id: light_02
+#     output: out_02
+#   - platform: binary
+#     name: '${relay3Name} (light)'
+#     id: light_03
+#     output: out_03
+#   - platform: binary
+#     name: '${relay4Name} (light)'
+#     id: light_04
+#     output: out_04
+#   - platform: binary
+#     name: '${relay5Name} (light)'
+#     id: light_05
+#     output: out_05
+#   - platform: binary
+#     name: '${relay6Name} (light)'
+#     id: light_06
+#     output: out_06
+#   - platform: binary
+#     name: '${relay7Name} (light)'
+#     id: light_07
+#     output: out_07
+#   - platform: binary
+#     name: '${relay8Name} (light)'
+#     id: light_08
+#     output: out_08
+#   - platform: binary
+#     name: '${relay9Name} (light)'
+#     id: light_09
+#     output: out_09
+#   - platform: binary
+#     name: '${relay10Name} (light)'
+#     id: light_10
+#     output: out_10
+#   - platform: binary
+#     name: '${relay11Name} (light)'
+#     id: light_11
+#     output: out_11
+#   - platform: binary
+#     name: '${relay12Name} (light)'
+#     id: light_12
+#     output: out_12
+#   - platform: binary
+#     name: '${relay13Name} (light)'
+#     id: light_13
+#     output: out_13
+#   - platform: binary
+#     name: '${relay14Name} (light)'
+#     id: light_14
+#     output: out_14
+#   - platform: binary
+#     name: '${relay15Name} (light)'
+#     id: light_15
+#     output: out_15
+#   - platform: binary
+#     name: '${relay16Name} (light)'
+#     id: light_16
+#     output: out_16
+#   - platform: binary
+#     name: '${relay17Name} (light)'
+#     id: light_17
+#     output: out_17
+#   - platform: binary
+#     name: '${relay18Name} (light)'
+#     id: light_18
+#     output: out_18
+#   - platform: binary
+#     name: '${relay19Name} (light)'
+#     id: light_19
+#     output: out_19
+#   - platform: binary
+#     name: '${relay20Name} (light)'
+#     id: light_20
+#     output: out_20
+#   - platform: binary
+#     name: '${relay21Name} (light)'
+#     id: light_21
+#     output: out_21
+#   - platform: binary
+#     name: '${relay22Name} (light)'
+#     id: light_22
+#     output: out_22
+#   - platform: binary
+#     name: '${relay23Name} (light)'
+#     id: light_23
+#     output: out_23
+#   - platform: binary
+#     name: '${relay24Name} (light)'
+#     id: light_24
+#     output: out_24
+#   - platform: binary
+#     name: '${relay25Name} (light)'
+#     id: light_25
+#     output: out_25
+#   - platform: binary
+#     name: '${relay26Name} (light)'
+#     id: light_26
+#     output: out_26
+#   - platform: binary
+#     name: '${relay27Name} (light)'
+#     id: light_27
+#     output: out_27
+#   - platform: binary
+#     name: '${relay28Name} (light)'
+#     id: light_28
+#     output: out_28
+#   - platform: binary
+#     name: '${relay29Name} (light)'
+#     id: light_29
+#     output: out_29
+#   - platform: binary
+#     name: '${relay30Name} (light)'
+#     id: light_30
+#     output: out_30
+#   - platform: binary
+#     name: '${relay31Name} (light)'
+#     id: light_31
+#     output: out_31
+#   - platform: binary
+#     name: '${relay32Name} (light)'
+#     id: light_32
+#     output: out_32

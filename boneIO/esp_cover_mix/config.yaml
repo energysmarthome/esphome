@@ -126,6 +126,7 @@ ota:
 web_server:
   port: 80
   local: true
+  version: 3
 
 i2c:
   - id: i2c_bus
