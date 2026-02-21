@@ -1,0 +1,30 @@
+# ESPHome build files
+/.esphome/
+
+# Python virtual environment
+/venv/
+
+# Secrets (contains WiFi passwords, etc.)
+secrets.yaml
+
+# Claude Code project file (internal notes)
+CLAUDE.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Offensive/private GIFs
+gif/new_*.gif
+gif/new_*.mp4
+
+# Private YAML configs (use offensive assets)
+troiaio-palletta.yaml
+
+# Brand images (submitted to home-assistant/brands repo)
+brands/
+
+# OS files
+.DS_Store
+Thumbs.db
