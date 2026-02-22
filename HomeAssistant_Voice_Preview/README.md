@@ -70,17 +70,48 @@ ESPHome-ban (HA OS esetén tipikusan: `/config/esphome/`):
 
 ### 2) go2rtc konfiguráció (HA oldalon)
 
-A go2rtc `go2rtc.yaml`-ba add hozzá:
+A go2rtc `go2rtc.yaml` példa:
 
 ```yaml
+
+
+log:
+  level: debug
+  ffmpeg: debug
+  streams: debug
+  webrtc: debug
+  api: debug
+
+api:
+  listen: ":1984"
+
+webrtc:
+  listen: ":8555"
+
+rtsp:
+  listen: ":8554"
+
+ffmpeg:
+  bin: ffmpeg
+  global: "-hide_banner -loglevel warning -v debug"
+  udp_pcm16k: "-f s16le -ar 16000 -ac 1 -i {input}"
+  tcp_wav16k: "-f wav -i {input}"
+
+
+
+
+
 streams:
-  stealth_mic:
+  haloszoba:
     - "ffmpeg:tcp://0.0.0.0:12345?listen=1#audio=pcma/16000"
+
+  konyha_ha_voice_stealth:
+    - "ffmpeg:tcp://0.0.0.0:12346?listen=1#input=tcp_wav16k#audio=pcma/16000"
+
+
 ```
 
-Megjegyzések:
-	•	listen=1 → a go2rtc/ffmpeg szerverként várja a TCP kapcsolatot.
-	•	A 12345 csak példa – szabadon változtatható.
+
 
 ---
 

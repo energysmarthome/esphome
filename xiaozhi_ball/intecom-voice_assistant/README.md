@@ -43,7 +43,6 @@ A hangút **ES8311 kodeken**, **egyetlen I2S duplex buszon** fut, **esp_aec** ak
 ### “Stealth listen” (figyelem!)
 - ⚠️ Opcionális funkció: **post-AEC mic PCM UDP stream** egy cél host/portra
 - `Stealth Listen` kapcsoló HA-ból indítható, **UI/LED jelzés nélkül**
-- Használat előtt gondold át a jogi/etikai megfelelést (hozzájárulás, adatkezelés).
 
 ---
 
@@ -64,6 +63,57 @@ A hangút **ES8311 kodeken**, **egyetlen I2S duplex buszon** fut, **esp_aec** ak
 | Battery ADC | 1 |
 
 ---
+
+## go2rtc konfiguráció (HA oldalon)
+
+A go2rtc `go2rtc.yaml` példa:
+
+```yaml
+
+
+log:
+  level: debug
+  ffmpeg: debug
+  streams: debug
+  webrtc: debug
+  api: debug
+
+api:
+  listen: ":1984"
+
+webrtc:
+  listen: ":8555"
+
+rtsp:
+  listen: ":8554"
+
+ffmpeg:
+  bin: ffmpeg
+  global: "-hide_banner -loglevel warning -v debug"
+  udp_pcm16k: "-f s16le -ar 16000 -ac 1 -i {input}"
+  tcp_wav16k: "-f wav -i {input}"
+
+
+
+
+
+streams:
+  haloszoba:
+    - "ffmpeg:tcp://0.0.0.0:12345?listen=1#audio=pcma/16000"
+
+  konyha_ha_voice_stealth:
+    - "ffmpeg:tcp://0.0.0.0:12346?listen=1#input=tcp_wav16k#audio=pcma/16000"
+
+
+```
+
+
+
+
+---
+
+
+
 
 ## Hálózat / elérés
 
