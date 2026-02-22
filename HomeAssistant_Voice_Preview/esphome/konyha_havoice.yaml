@@ -1,0 +1,20 @@
+substitutions:
+  name: konyha_havoice
+  friendly_name: Konyha HA voice prewiev
+
+packages:
+  voice_local: !include packages/home-assistant-voice-local.yaml
+
+api:
+  encryption:
+    key: 1imMR+O7BNN+hWw0vhZiEAqqnjwADO/hoNhiGlnmI6U=
+
+http_request:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.171
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
