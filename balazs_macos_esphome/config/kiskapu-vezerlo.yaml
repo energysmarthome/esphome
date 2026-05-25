@@ -1,0 +1,420 @@
+# Board: ESP-12F_Relay_X8
+# Definition: definitions/boards/esp_12f_relay_x8/manifest.yaml
+
+esphome:
+  name: kiskapu_vezerlo
+
+esp32:
+  variant: esp32
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: "237MbSb5ITeJwjzWKJB7hZA8Gyjbp7TdqW6pyazg0w8="
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid_udvar
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.190
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  ap:
+    ssid: "kiskapuvezerlo"
+    password: "0f4c873EwxHU"
+
+captive_portal:
+
+web_server:
+  port: 80
+
+# Status LED
+status_led:
+  pin:
+    number: 23
+
+# LED-szalag tápja a 2-es relén keresztül.
+# Fontos: a GPIO33 már nem szerepel külön switch-ként,
+# mert ezt a power_supply komponens kezeli.
+power_supply:
+  - id: ledszalag_tap_rele
+    pin: GPIO33
+    enable_time: 300ms
+    keep_on_time: 0s
+
+
+output:
+  - platform: gpio
+    pin: GPIO32
+    id: relay1_output
+
+
+
+    
+
+    
+# Relay outputs exposed as switches in Home Assistant
+# Relay2 szándékosan nincs itt, mert a LED-szalag tápját kapcsolja.
+switch:
+#  - platform: gpio
+#    pin: GPIO32
+#    name: Relay1
+#    id: relay1
+
+  - platform: gpio
+    pin: GPIO25
+    name: Relay3
+    id: relay3
+
+  - platform: gpio
+    pin: GPIO26
+    name: Relay4
+    id: relay4
+
+  - platform: gpio
+    pin: GPIO27
+    name: Relay5
+    id: relay5
+
+  - platform: gpio
+    pin: GPIO14
+    name: Relay6
+    id: relay6
+
+  - platform: gpio
+    pin:
+      number: 12
+      ignore_strapping_warning: true
+    name: Relay7
+    id: relay7
+
+  - platform: gpio
+    pin: GPIO13
+    name: Relay8
+    id: relay8
+
+  - platform: restart
+    name: "kiskapu_vezerlo Restart"
+
+light:
+  - platform: binary
+    name: "Kerti lámpák"
+    id: relay1
+    output: relay1_output
+    restore_mode: RESTORE_DEFAULT_OFF
+  
+  - platform: esp32_rmt_led_strip
+    id: kiskapu_ledszalag
+    name: "Kiskapu LEDszalag"
+    pin: GPIO4
+    # FONTOS:
+    # 60 LED/m szalag esetén ezt a tényleges hossz alapján állítsd.
+    # Ha 1 méter, akkor első próbára 60.
+    # Ha azt tapasztalod, hogy csak minden 3. LED/pixel vezérelhető külön,
+    # akkor WS2814 csoportvezérelt, és 1 méternél lehet, hogy 20-at kell megadni.
+    num_leds: 60
+    # WS2814 / SK6812 jellegű RGBW szalaghoz.
+    chipset: SK6812
+    rgb_order: RGB
+    # A korábbi configodban ez szerepelt, ezért meghagytam.
+    # Ha a fehér csatorna vagy a színek furcsák, próbáld meg helyette:
+    # is_rgbw: true
+    is_wrgb: true
+    # Relay2 / GPIO33 automatikus tápvezérlése:
+    # LED ON előtt relé bekapcsol, majd 300 ms után indul a LED adat.
+    # LED OFF után relé lekapcsol.
+    power_supply: ledszalag_tap_rele
+    restore_mode: RESTORE_DEFAULT_OFF
+    default_transition_length: 0.5s
+    max_refresh_rate: 16ms
+
+
+
+
+
+    
+    effects:
+      - addressable_rainbow:
+          name: "WLED - Rainbow"
+          speed: 10
+          width: 50
+
+      - addressable_color_wipe:
+          name: "WLED - Color Wipe"
+          add_led_interval: 35ms
+          reverse: false
+          colors:
+            - red: 100%
+              green: 0%
+              blue: 0%
+              white: 0%
+              num_leds: 4
+            - red: 0%
+              green: 100%
+              blue: 0%
+              white: 0%
+              num_leds: 4
+            - red: 0%
+              green: 0%
+              blue: 100%
+              white: 0%
+              num_leds: 4
+            - red: 0%
+              green: 0%
+              blue: 0%
+              white: 100%
+              num_leds: 4
+
+      - addressable_scan:
+          name: "WLED - Scanner"
+          move_interval: 30ms
+          scan_width: 4
+
+      - addressable_twinkle:
+          name: "WLED - Twinkle"
+          twinkle_probability: 5%
+          progress_interval: 16ms
+
+      - addressable_random_twinkle:
+          name: "WLED - Random Twinkle"
+          twinkle_probability: 5%
+          progress_interval: 32ms
+
+      - addressable_fireworks:
+          name: "WLED - Fireworks"
+          update_interval: 32ms
+          spark_probability: 10%
+          use_random_color: true
+          fade_out_rate: 120
+
+      - addressable_lambda:
+          name: "WLED - Rainbow Chase"
+          update_interval: 20ms
+          lambda: |-
+            static uint16_t offset = 0;
+
+            if (initial_run) {
+              offset = 0;
+            }
+
+            auto wheel = [](uint8_t pos) -> Color {
+              pos = 255 - pos;
+
+              if (pos < 85) {
+                return Color(255 - pos * 3, 0, pos * 3, 0);
+              }
+
+              if (pos < 170) {
+                pos -= 85;
+                return Color(0, pos * 3, 255 - pos * 3, 0);
+              }
+
+              pos -= 170;
+              return Color(pos * 3, 255 - pos * 3, 0, 0);
+            };
+
+            for (int i = 0; i < it.size(); i++) {
+              uint8_t color_index = (i * 256 / it.size() + offset) & 255;
+              it[i] = wheel(color_index);
+            }
+
+            offset++;
+
+      - addressable_lambda:
+          name: "WLED - White Breathe"
+          update_interval: 30ms
+          lambda: |-
+            static uint8_t level = 10;
+            static int dir = 5;
+
+            if (initial_run) {
+              level = 10;
+              dir = 5;
+            }
+
+            level += dir;
+
+            if (level >= 250) {
+              level = 250;
+              dir = -5;
+            }
+
+            if (level <= 10) {
+              level = 10;
+              dir = 5;
+            }
+
+            for (int i = 0; i < it.size(); i++) {
+              it[i] = Color(0, 0, 0, level);
+            }
+
+      - addressable_lambda:
+          name: "WLED - Meteor"
+          update_interval: 25ms
+          lambda: |-
+            static int pos = 0;
+
+            if (initial_run) {
+              pos = 0;
+            }
+
+            it.all().fade_to_black(35);
+
+            for (int i = 0; i < 8; i++) {
+              int p = pos - i;
+              if (p >= 0 && p < it.size()) {
+                int brightness = 255 - (i * 28);
+                it[p] = Color(brightness, brightness, brightness, 0);
+              }
+            }
+
+            pos++;
+
+            if (pos >= it.size() + 8) {
+              pos = 0;
+            }
+
+      - addressable_lambda:
+          name: "WLED - Gate Open Green"
+          update_interval: 50ms
+          lambda: |-
+            static int pos = 0;
+
+            if (initial_run) {
+              pos = 0;
+            }
+
+            it.all() = Color(0, 0, 0, 0);
+
+            for (int i = 0; i < it.size(); i++) {
+              if ((i + pos) % 10 < 5) {
+                it[i] = Color(0, 255, 0, 0);
+              }
+            }
+
+            pos++;
+
+      - addressable_lambda:
+          name: "WLED - Police"
+          update_interval: 80ms
+          lambda: |-
+            static bool phase = false;
+
+            if (initial_run) {
+              phase = false;
+            }
+
+            for (int i = 0; i < it.size(); i++) {
+              bool left_side = i < it.size() / 2;
+
+              if ((left_side && phase) || (!left_side && !phase)) {
+                it[i] = Color(255, 0, 0, 0);
+              } else {
+                it[i] = Color(0, 0, 255, 0);
+              }
+            }
+
+            phase = !phase;
+
+      - addressable_lambda:
+          name: "WLED - Warm Sparkle"
+          update_interval: 40ms
+          lambda: |-
+            it.all().fade_to_black(45);
+
+            for (int i = 0; i < it.size(); i++) {
+              if (random_uint32() % 100 < 8) {
+                it[i] = Color(255, 120, 20, 80);
+              }
+            }
+
+      - addressable_lambda:
+          name: "WLED - Running Red"
+          update_interval: 35ms
+          lambda: |-
+            static int pos = 0;
+
+            if (initial_run) {
+              pos = 0;
+            }
+
+            it.all().fade_to_black(60);
+
+            for (int i = 0; i < it.size(); i++) {
+              if ((i + pos) % 12 < 3) {
+                it[i] = Color(255, 0, 0, 0);
+              }
+            }
+
+            pos++;
+
+      - addressable_lambda:
+          name: "WLED - Soft RGB Fade"
+          update_interval: 40ms
+          lambda: |-
+            static uint8_t hue = 0;
+
+            if (initial_run) {
+              hue = 0;
+            }
+
+            auto wheel = [](uint8_t pos) -> Color {
+              pos = 255 - pos;
+
+              if (pos < 85) {
+                return Color(255 - pos * 3, 0, pos * 3, 0);
+              }
+
+              if (pos < 170) {
+                pos -= 85;
+                return Color(0, pos * 3, 255 - pos * 3, 0);
+              }
+
+              pos -= 170;
+              return Color(pos * 3, 255 - pos * 3, 0, 0);
+            };
+
+            Color c = wheel(hue);
+
+            for (int i = 0; i < it.size(); i++) {
+              it[i] = c;
+            }
+
+            hue++;
+
+binary_sensor:
+  - platform: gpio
+    id: kiskapu_nyitaserzekelo
+    name: "Nyitásérzékelő"
+    device_class: door
+    pin:
+      number: GPIO16
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on: 50ms
+      - delayed_off: 50ms
+
+  - platform: gpio
+    id: kiskapu_lampakapcsolo
+    name: "Lámpakapcsoló"
+    pin:
+      number: GPIO17
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      then:
+        - light.turn_on: kiskapu_ledszalag

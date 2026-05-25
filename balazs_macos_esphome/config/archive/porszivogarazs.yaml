@@ -1,0 +1,67 @@
+esphome:
+  name: little_wemos
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Little Wemos Fallback Hotspot"
+    password: "************"
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "pBJ7lz2N61BZzULqsTZrNtz4YKux1dHPFOCqTLY1TK4="
+  services:
+    - service: control_servo
+      variables:
+        level: float
+      then:
+        - servo.write:
+            id: my_servo
+            level: !lambda 'return level / 100.0;'
+    - service: control_servo2
+      variables:
+        level: float
+      then:
+        - servo.write:
+            id: my_servo2
+            level: !lambda 'return level / 100.0;'
+ota:
+  password: "2ffba2f89f4d00b2bed56f69952ecb82"
+captive_portal:
+
+# Enable logging
+logger:
+
+web_server:
+  port: 80
+
+
+
+
+output:
+  - platform: esp8266_pwm
+    id: pwm_output
+    pin: D3
+    frequency: 50 Hz
+  - platform: esp8266_pwm
+    id: pwm_output2
+    pin: D2
+    frequency: 50 Hz
+servo:
+  - id: my_servo
+    output: pwm_output
+  - id: my_servo2
+    output: pwm_output2
+
+
+
+switch:
+  - platform: gpio
+    name: "Porszívógarázs relé"
+    pin:
+      number: D5
+      inverted: true

@@ -1,0 +1,89 @@
+esphome:
+  name: wireguard-teszt
+  friendly_name: wireguard_teszt
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "zIuLxrkCespyBhr+uhWmOEvUob6ddfwBL7u6Kqg/AHI="
+
+ota:
+  - platform: esphome
+    password: "86d11053e27e612ad903ba2f31e50383"
+
+wifi:
+  manual_ip:
+
+    static_ip: 192.168.28.49
+
+    gateway: 192.168.28.1
+
+    subnet: 255.255.255.0
+
+    dns1: 1.1.1.1
+
+    dns2: 8.8.8.8
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Wireguard-Teszt Fallback Hotspot"
+    password: "3I9MkA4TMrrB"
+
+captive_portal:
+    
+
+
+
+      
+web_server:
+  port: 80
+
+time:
+
+  - platform: sntp
+
+    id: sntp_time
+
+    timezone: Europe/Budapest
+
+    servers:
+
+      - time.cloudflare.com
+
+      - time.google.com
+
+      - pool.ntp.org
+
+wireguard:
+
+  address: 10.28.0.2
+
+  netmask: 255.255.255.0
+
+  private_key: "yLlBzhBqmG9SBDBWekNHIbFR68g11xKN9ya+2IL2Ang="
+
+  peer_endpoint: vpn.energysmarthome.cloud
+
+  peer_port: 50009
+
+  peer_public_key: "5RPvW88nWcEzzej6eee8s23gl7EKNpDNNf6yWlqPm20="
+
+  peer_preshared_key: "ncEo1t9aQ1ZrNOF/INctPI5enqfifWc+ijpJ4YqZx0Y="
+
+  peer_allowed_ips:
+
+    - 192.168.28.0/24
+
+    - 10.28.0.0/24
+
+  peer_persistent_keepalive: 25s
+
+  reboot_timeout: 0s

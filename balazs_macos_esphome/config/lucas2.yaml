@@ -1,0 +1,187 @@
+esphome:
+  name: lucas2
+  friendly_name: lucas2
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "UCQFAgK8aV75oXwVLiQdN32Z3GjL9cER4RR+JIHAHxY="
+
+ota:
+  - platform: esphome
+    password: "f134d5ebd9e55904d130ff57f1ab6988"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.211
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Lucas2 Fallback Hotspot"
+    password: "qGrIZv1s1FUd"
+
+captive_portal:
+    
+web_server:
+  port: 80
+
+
+i2c:
+  sda: GPIO17
+  scl: GPIO16
+  scan: true
+
+
+ads1115:
+  - address: 0x48
+    id: ads1115_a
+    continuous_mode: true
+  - address: 0x49
+    id: ads1115_b
+    continuous_mode: true
+
+
+
+sensor:
+  - platform: ads1115
+    ads1115_id: ads1115_a
+    multiplexer: 'A0_GND'
+    name: "5V feszültség2 számításhoz"
+    update_interval: 5s
+    gain: 4.096
+    filters:
+      - calibrate_linear:
+         method: exact
+         datapoints:
+          #  - 0 -> 0
+          #  - 0.260 -> 1.308
+          #  - 0.340 -> 1.710
+          #  - 0.452 -> 2.27
+          #  - 0.556 -> 2.79
+          #  - 0.649 -> 3.26
+          #  - 0.757 -> 3.8
+          #  - 0.955 -> 4.8
+
+           - 0 -> 0.1
+           - 0.260 -> 1.408
+           - 0.340 -> 1.810
+           - 0.452 -> 2.37
+           - 0.556 -> 2.89
+           - 0.649 -> 3.36
+           - 0.757 -> 3.9
+           - 0.955 -> 4.9
+
+
+  - platform: ads1115
+    ads1115_id: ads1115_a
+    multiplexer: 'A1_GND'
+    update_interval: 5s
+    name: "12V feszültség2 számításhoz"
+    gain: 4.096
+    filters:
+      - calibrate_linear:
+         method: exact
+         datapoints:
+          - 0 -> 0
+          - 0.257 -> 1.32510
+          - 0.351 -> 1.80622
+          - 0.452 -> 2.32402
+          - 0.554 -> 2.84387
+          - 0.633 -> 3.24140
+          - 0.736 -> 3.77144
+          - 2.345 -> 12.01765
+
+
+  - platform: ads1115
+    ads1115_id: ads1115_b
+    multiplexer: 'A1_GND'
+    name: "5V áram számításhoz"
+    update_interval: 5s
+    gain: 4.096
+    filters:
+      - calibrate_linear:
+         method: exact
+         datapoints:
+           - 0.461 -> 0
+           - 0.473 -> 0.4
+           - 0.479 -> 0.75
+           - 0.492 -> 1.43
+           - 0.505 -> 2.08
+           - 0.514 -> 2.62
+           - 0.523 -> 3.09
+           - 0.535 -> 3.75
+
+  - platform: ads1115
+    ads1115_id: ads1115_b
+    multiplexer: 'A0_GND'
+    name: "12V áram számításhoz"
+    update_interval: 5s
+    gain: 4.096
+    filters:
+      - calibrate_linear:
+         method: exact
+         datapoints:
+           - 0.462 -> 0
+           - 0.486 -> 1.15
+           - 0.494 -> 1.53
+           - 0.504 -> 2.07
+           - 0.513 -> 2.5
+           - 0.522 -> 2.99
+           - 0.53 -> 3.48
+           - 0.542 -> 4.09
+
+
+
+
+
+
+switch:
+  - platform: restart
+    name: "lucas2 Restart"
+
+  - platform: gpio #
+    restore_mode: RESTORE_DEFAULT_ON
+    pin:
+      number: GPIO18
+      inverted: false
+    name: "12V DC"
+  - platform: gpio #
+    restore_mode: RESTORE_DEFAULT_ON
+    pin:
+      number: GPIO19
+      inverted: false
+    name: "5V DC"
+  - platform: gpio #
+    pin:
+      number: GPIO21
+      inverted: true
+    name: "Háztartási ablaknyitó"
+  - platform: gpio #
+    pin:
+      number: GPIO22
+      inverted: false
+    name: "nemhasznalt relé"
+  - platform: gpio #
+    restore_mode: RESTORE_DEFAULT_ON
+    pin:
+      number: GPIO23
+      inverted: false
+    name: "Huawei router"
+  - platform: gpio #
+    restore_mode: RESTORE_DEFAULT_ON
+    pin:
+      number: GPIO25
+      inverted: false
+    name: "Vidanetes ONT"

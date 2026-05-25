@@ -1,0 +1,107 @@
+esphome:
+  name: fogyasztasmero
+  friendly_name: fogyasztasmero
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "piz70EkgT5pS0mBiqwVxniOZzw1uqMZFpB9G8uQGw6E="
+
+ota:
+  - platform: esphome
+    password: "295826754125f2803d9825ec69fa597b"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.237
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Fogyasztasmero Fallback Hotspot"
+    password: "y3tph0xnVt6t"
+
+captive_portal:
+    
+web_server:
+  port: 80
+
+
+uart:
+  rx_pin: GPIO03
+  tx_pin: GPIO01
+  baud_rate: 9600
+
+modbus:
+
+sensor:
+#  - platform: pzemac
+#    current:
+#      name: "Fogyasztásmérő áram"
+#    voltage:
+#      name: "Fogyasztásmérő feszültség"
+#    energy:
+#      name: "Fogyasztásmérő fogyasztás"
+#    power:
+#      name: "Fogyasztásmérő teljesítmény"
+#    frequency:
+#      name: "Fogyasztásmérő frekvencia"
+#    power_factor:
+#      name: "Fogyasztásmérő teljesítménytényező"
+#    update_interval: 10s
+
+
+
+
+  - platform: pzemac
+    update_interval: 10s
+
+    current:
+      name: "Fogyasztásmérő áram"
+      filters:
+        - timeout:
+            timeout: 30s       # ha 30 s-ig nincs adat
+            value: !lambda return 0;   # küldj 0-t
+
+    voltage:
+      name: "Fogyasztásmérő feszültség"
+      filters:
+        - timeout:
+            timeout: 30s
+            value: !lambda return 0;
+
+    power:
+      name: "Fogyasztásmérő teljesítmény"
+      filters:
+        - timeout:
+            timeout: 30s
+            value: !lambda return 0;
+
+    frequency:
+      name: "Fogyasztásmérő frekvencia"
+      filters:
+        - timeout:
+            timeout: 30s
+            value: !lambda return 0;
+
+    # A kumulatív energia-mérőt (kWh) és teljesítménytényezőt
+    # általában NEM nullázzuk, ezért itt nem alkalmaztam timeout-ot,
+    # de ha mégis szükséged van rájuk, ugyanilyen blokkal kiegészítheted.
+    energy:
+      name: "Fogyasztásmérő fogyasztás"
+
+    power_factor:
+      name: "Fogyasztásmérő teljesítménytényező"
+      filters:
+        - timeout:
+            timeout: 30s
+            value: !lambda return 0;

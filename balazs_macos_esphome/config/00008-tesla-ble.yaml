@@ -1,0 +1,53 @@
+esphome:
+  name: 00008-tesla-ble
+  friendly_name: 00008_tesla_ble
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "YJs4MfOSk3IfiofaaMaZ/aMds9+PWhAV1lDJvmbwSLk="
+
+ota:
+  - platform: esphome
+    password: "1f1613596d38da8cd3e200c02b5273d5"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "00008-Tesla-Ble Fallback Hotspot"
+    password: "12345678"
+
+captive_portal:
+
+substitutions:
+  charging_amps_max: "16"
+
+
+
+
+
+
+# EZ AKKOR HA MÁR MEGVAN A MAC ADDRESS
+#packages:
+#  base: github://PedroKTFC/esphome-tesla-ble/packages/base.yml
+#  common: github://PedroKTFC/esphome-tesla-ble/packages/common.yml
+#  project: github://PedroKTFC/esphome-tesla-ble/packages/project.yml
+#  client: github://PedroKTFC/esphome-tesla-ble/packages/client.yml
+
+# TESLA MAC ADDRESS MEGKERESÉSE
+packages:
+  base: github://PedroKTFC/esphome-tesla-ble/packages/base.yml
+  common: github://PedroKTFC/esphome-tesla-ble/packages/common.yml
+  project: github://PedroKTFC/esphome-tesla-ble/packages/project.yml
+  listener: github://PedroKTFC/esphome-tesla-ble/packages/listener.yml

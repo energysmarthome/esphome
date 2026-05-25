@@ -1,0 +1,94 @@
+esphome:
+  name: wc-villanykapcsolo
+  friendly_name: wc_villanykapcsolo
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+  
+time:
+  - platform: sntp
+    id: sntp_time
+
+wireguard:
+  address: 10.28.0.2
+  netmask: 0.0.0.0
+  private_key: "yLlBzhBqmG9SBDBWekNHIbFR68g11xKN9ya+2IL2Ang="
+  peer_endpoint: vpn.energysmarthome.cloud
+  peer_port: 50009
+  peer_public_key: "5RPvW88nWcEzzej6eee8s23gl7EKNpDNNf6yWlqPm20="
+  peer_preshared_key: "ncEo1t9aQ1ZrNOF/INctPI5enqfifWc+ijpJ4YqZx0Y="
+  peer_allowed_ips:
+    - 10.28.0.0/24
+  peer_persistent_keepalive: 25s
+# Enable Home Assistant API
+
+
+
+api:
+  encryption:
+    key: "J8dYTVuhJl3Zmhfk4aCVcOoHmfayAltJ2Rgj1RhvhdA="
+
+ota:
+  - platform: esphome
+    password: "fd6d75f23b9be72dcd824dfb32c29fad"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.218
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "wc-Lampakapcsolo"
+    password: "0f4c873EwxHU"
+
+captive_portal:
+
+
+web_server:
+  port: 80
+
+# Definiáljuk a reléket
+switch:
+
+  - platform: restart
+    name: "wclampakapcsolo Restart"
+
+
+# Definiáljuk a beépített LED-et, ha van
+light:
+  - platform: binary
+    name: "WC Beépített LED"
+    output: led_output
+  - platform: binary
+    name: "WC lámpa"
+    output: led_output1
+    id: relay1
+
+output:
+  - platform: gpio
+    pin: GPIO13
+    inverted: true
+    id: led_output
+  - platform: gpio
+    pin: GPIO12
+    inverted: false
+    id: led_output1
+# Definiáljuk a gombokat
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "WC lámpakapcsoló"
+    on_press:
+      - light.toggle: relay1
+
+

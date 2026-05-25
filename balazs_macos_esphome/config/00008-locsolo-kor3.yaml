@@ -1,0 +1,103 @@
+substitutions:
+  device_name: 00008_locsolorendszer_kor3
+  friendly_name: 00008_locsolorendszer_kor3
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  platformio_options:
+    board_build.mcu: esp32c3
+    board_build.variant: esp32c3
+    board_build.f_cpu: 160000000L
+    board_build.f_flash: 80000000L
+    board_build.flash_mode: dio
+    board_build.flash_size: 8MB
+
+esp32:
+  board: esp32-c3-devkitm-1
+  flash_size: 8MB
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+ota:
+  - platform: esphome
+
+wifi:
+  ap:
+    ssid: "locsolo_kor3"
+    password: "12345678"
+
+
+captive_portal:
+
+web_server:
+
+output:
+  - platform: gpio
+    id: relay_output
+    pin: GPIO5
+
+switch:
+  - platform: output
+    id: relay
+    name: "${friendly_name} Relay"
+    output: relay_output
+
+binary_sensor:
+  - platform: gpio
+    id: wall_switch
+    name: "${friendly_name} Switch Input"
+    pin:
+      number: GPIO10
+      mode:
+        input: true
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+    on_press:
+      - switch.toggle: relay
+
+  - platform: gpio
+    id: button
+    name: "${friendly_name} Button"
+    pin:
+      number: GPIO4
+      inverted: true
+      mode:
+        input: true
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+
+sensor:
+  - platform: adc
+    id: temperature_sensor_voltage
+    pin: GPIO3
+    attenuation: 11db
+    update_interval: 30s
+
+  - platform: resistance
+    id: temperature_sensor_resistance
+    sensor: temperature_sensor_voltage
+    configuration: DOWNSTREAM
+    resistor: 10kOhm
+
+  - platform: ntc
+    name: "${friendly_name} Temperature"
+    sensor: temperature_sensor_resistance
+    calibration:
+      b_constant: 3350
+      reference_resistance: 10kOhm
+      reference_temperature: 25°C
+    
+
+
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: true
+
+bluetooth_proxy:

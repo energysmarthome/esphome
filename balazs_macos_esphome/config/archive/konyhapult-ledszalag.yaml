@@ -1,0 +1,93 @@
+esphome:
+  name: konyhapult-ledszalag
+  friendly_name: Konyhapult ledszalag
+
+esp8266:
+  board: d1_mini   # ha más ESP8266-od van, írd át (pl. nodemcuv2)
+
+
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "rpsjaZWuPGHUguI6rxRR7Rv05u/p0fnw+G34m+va4nk="
+
+ota:
+  - platform: esphome
+    password: "375805a837cff8af57ab23f3921a3348"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Konyhapult-Ledszalag"
+    password: "izfrrH7K5DeS"
+
+captive_portal:
+
+# SK6812 RGBW LED szalag – 318 LED
+light:
+  - platform: neopixelbus
+    id: sk6812_strip
+    name: "Nappali LED szalag"
+
+    # HARDVER
+    variant: SK6812       # aktuális ESPHome-doksi szerinti chipset név  [oai_citation:1‡ESPHome](https://esphome.io/components/light/neopixelbus/)
+    type: GRBW            # SK6812 RGBW-hoz tipikus sorrend; ha a színek furcsák, ezt kell állítani  [oai_citation:2‡Home Assistant Community](https://community.home-assistant.io/t/how-to-have-color-temperature-mode-for-neopixelbus-sk6812-rgbw/370606?utm_source=chatgpt.com)
+    pin: GPIO3            # ajánlott ESP8266 DMA pin, minimális villogás  [oai_citation:3‡ESPHome](https://esphome.io/components/light/neopixelbus/)
+    num_leds: 187
+
+    # MÓDSZER – esp8266_dma a most ajánlott
+    method:
+      type: esp8266_dma   # csak GPIO3-on elérhető, ez a legstabilabb módszer ESP8266-on  [oai_citation:4‡ESPHome](https://esphome.io/components/light/neopixelbus/)
+
+    # FÉNYERŐ / KORREKCIÓ
+    gamma_correct: 2.2
+    color_correct: [80%, 80%, 80%, 60%]  # RGB egy kicsit visszafogva, W még jobban
+
+    default_transition_length: 500ms
+    restore_mode: RESTORE_DEFAULT_OFF
+
+    # EFFEKTUSOK
+    effects:
+      - random:
+          name: "Random lassú"
+          transition_length: 30s
+          update_interval: 30s
+
+      - random:
+          name: "Random gyors"
+          transition_length: 4s
+          update_interval: 5s
+
+      - addressable_rainbow:
+          name: "Szivárvány"
+          speed: 10
+          width: 50
+
+      - addressable_color_wipe:
+          name: "Szín törlés"
+
+      - addressable_scan:
+          name: "Szkennelés"
+
+      - addressable_random_twinkle:
+          name: "Csillogás"
+
+      - strobe:
+          name: "Strobo fehér"
+          colors:
+            - state: true
+              brightness: 100%
+              red: 0%
+              green: 0%
+              blue: 0%
+              white: 100%
+              duration: 80ms
+            - state: false
+              duration: 80ms

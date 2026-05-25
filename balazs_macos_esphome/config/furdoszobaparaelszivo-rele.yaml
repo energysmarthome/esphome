@@ -1,0 +1,64 @@
+esphome:
+  name: furdoszobaparaelszivo-rele
+  friendly_name: furdoszobaparaelszivo_rele
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "xnVoyxuTyEXYSf1BMa8Afu2+vB5yIhsMYkdm56vmKvU="
+
+ota:
+  - platform: esphome
+    password: "00d048549bb462cbd90f87e9d40a101a"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.214
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "furdoszobaparaelszivo_rele"
+    password: "0f4c873EwxHU"
+
+captive_portal:
+
+
+
+web_server:
+  port: 80
+
+# Definiáljuk a reléket
+switch:
+  - platform: gpio
+    name: "Fürdőszoba páraelszívó relé"
+    pin: GPIO4
+    id: relay1
+    restore_mode: ALWAYS_OFF
+  - platform: restart
+    name: "furdoszobaparaelszivorele_rele Restart"
+
+
+
+# Definiáljuk a gombokat
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO05
+#      mode: INPUT_PULLUP
+#      inverted: True
+    name: "Fürdőszoba páraelszívó relé"
+    on_state:
+      then:
+        - switch.toggle: relay1
+    internal: true
+    id: switchid

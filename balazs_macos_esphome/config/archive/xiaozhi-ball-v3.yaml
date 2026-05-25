@@ -1,0 +1,61 @@
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      # Default is 10, increased for: TCP server + API + OTA
+      CONFIG_LWIP_MAX_SOCKETS: "16"
+
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/n-IA-hane/intercom-api
+      ref: main
+      path: esphome_components
+    components: [intercom_api, esp_aec]
+
+
+
+# I2S Audio (example with separate mic/speaker)
+i2s_audio:
+  - id: i2s_mic_bus
+    i2s_lrclk_pin: GPIO3
+    i2s_bclk_pin: GPIO2
+  - id: i2s_spk_bus
+    i2s_lrclk_pin: GPIO6
+    i2s_bclk_pin: GPIO7
+
+microphone:
+  - platform: i2s_audio
+    id: mic_component
+    i2s_audio_id: i2s_mic_bus
+    i2s_din_pin: GPIO4
+    adc_type: external
+    pdm: false
+    bits_per_sample: 32bit
+    sample_rate: 16000
+
+speaker:
+  - platform: i2s_audio
+    id: spk_component
+    i2s_audio_id: i2s_spk_bus
+    i2s_dout_pin: GPIO8
+    dac_type: external
+    sample_rate: 16000
+    bits_per_sample: 16bit
+
+# Echo Cancellation (recommended)
+esp_aec:
+  id: aec_processor
+  sample_rate: 16000
+  filter_length: 4       # 64ms tail length
+  mode: voip_low_cost    # Optimized for real-time
+
+# Intercom API - Simple mode (browser only)
+intercom_api:
+  id: intercom
+  mode: simple
+  microphone: mic_component
+  speaker: spk_component
+  aec_id: aec_processor

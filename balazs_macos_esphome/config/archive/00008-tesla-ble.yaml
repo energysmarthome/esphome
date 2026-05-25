@@ -1,0 +1,62 @@
+substitutions:
+  device_name: tesla_ble
+  friendly_name: Tesla BLE
+  device_description: Tesla BLE Controller
+
+  # Board beállítások normál ESP32-höz
+  board: esp32dev
+  variant: esp32
+  flash_size: 4MB
+
+  # Tesla adatok
+  ble_mac_address: !secret tesla_ble_mac_address
+  tesla_vin: !secret tesla_vin
+
+  # Tesla töltésvezérlés
+  charging_amps_max: "32"
+
+  # Polling intervallumok
+  vcsec_poll_interval: "10"
+  infotainment_poll_interval_awake: "30"
+  infotainment_poll_interval_active: "10"
+  infotainment_sleep_timeout: "660"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: ${device_description}
+
+esp32:
+  board: ${board}
+  flash_size: ${flash_size}
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+
+api:
+  encryption:
+    key: !secret tesla_ble_api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret wifi_hotspot_password
+
+captive_portal:
+
+packages:
+  tesla_ble:
+    url: https://github.com/PedroKTFC/esphome-tesla-ble/
+    files:
+      - packages/base.yml
+      - packages/common.yml
+      - packages/project.yml
+      - packages/client.yml
+      # opcionális magyar entitásnevekhez, ha létezik / használni akarod:
+      # - packages/language_hu.yml

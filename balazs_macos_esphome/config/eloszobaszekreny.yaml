@@ -1,0 +1,124 @@
+esphome:
+  name: eloszobaszekreny
+  friendly_name: eloszobaszekreny
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "kZTDUVp7Tc+NN3y2M6OzeQQVh3rJTSLgm1e9rPqVrq4="
+
+ota:
+  - platform: esphome
+    password: "223ceccd128a63bfd077409d11fe97bd"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.239
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Eloszobaszekreny"
+    password: "U5Gb9rMzNk4R"
+
+captive_portal:
+  
+web_server:
+  port: 80
+  
+    
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: true
+
+
+remote_receiver:
+  - id: rc_receiver
+    pin: GPIO4
+    dump: rc_switch
+    tolerance: 60%
+    filter: 250us
+    idle: 4ms
+    buffer_size: 2kb
+    on_rc_switch:
+      then:
+        - lambda: |-
+            id(received_rf_code).publish_state(to_string(x.code));
+
+
+remote_transmitter:
+  pin: GPIO5
+  carrier_duty_percent: 50%
+
+one_wire:
+  - pin: GPIO18
+    platform: gpio
+
+
+text_sensor:
+  - platform: homeassistant
+    name: "RF Code"
+    entity_id: input_text.rf_code
+    id: rf_code
+  - platform: template
+    name: "Received RF Code"
+    id: received_rf_code
+
+sensor:
+  - platform: dallas_temp
+    address: "0x463de1d443c4af28"
+    name: "Gázkazán előremenő"
+    update_interval: 5s
+  - platform: dallas_temp
+    address: "0xbd3de1e380636128"
+    name: "Gázkazán visszatérő"
+    update_interval: 5s
+
+switch:
+  - platform: restart
+    name: "eloszobaszekreny Restart"
+  - platform: gpio
+    pin:
+      number: GPIO25
+      inverted: true
+    name: "Gázkazán"
+  - platform: gpio
+    pin:
+      number: GPIO27
+      inverted: false
+    name: "Osztógyűjtő felező golyóscsap"
+  - platform: template
+    name: "Send RF Code"
+    turn_on_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: !lambda |-
+            return id(rf_code).state;
+          protocol: 1
+          repeat:
+            times: 5
+            wait_time: 50ms
+
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO26
+      mode:
+        input: true
+        pullup: true
+    name: "melegvízmérő"
+    device_class: "window"
+
+

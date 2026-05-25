@@ -1,0 +1,280 @@
+substitutions:
+  devicename: Marci szoba redőny
+  nyitasiIdoMinimum: "10"
+  nyitasiIdoMaximum: "30"
+  espHome_name: marci_szoba-redony
+  ipCim: 192.168.22.231
+  # Az "ablak alja" a MEGJELENÍTÉSBEN hány % NYITOTTSÁG legyen? (0=zárt…100=nyitott)
+  ALSO_PONT_KIJELZETT_NYITOTTSAG_PC: "10"
+
+esphome:
+  name: ${espHome_name}
+  friendly_name: ${devicename}
+
+  on_boot:
+    then:
+      - lambda: |-
+          id(shutter_raw).set_open_duration((uint32_t)(id(up_time_s).state * 1000));
+          id(shutter_raw).set_close_duration((uint32_t)(id(down_time_s).state * 1000));
+
+preferences:
+  flash_write_interval: 5s
+
+
+
+globals:
+  - id: moving_dir
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+  
+api:
+  encryption:
+    key: "ou+wnkj/GpL2G0efUjC/xwa2eTFQNr/ZTnLhZcdGrdw="
+
+ota:
+  - platform: esphome
+    password: "39ced7cad0943e0bd8635c5800887d7a"
+
+logger:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: ${ipCim}
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: ${devicename}
+    password: "SG9TQNv0qWXt"
+
+captive_portal:
+
+web_server:
+  port: 80
+
+i2c:
+  sda: GPIO12
+  scl: GPIO14
+
+sensor:
+  - platform: ade7953_i2c
+    irq_pin: GPIO16
+    voltage:
+      name: ${devicename} feszültség
+    current_a:
+      name: ${devicename} áram B
+    current_b:
+      name: ${devicename} áram A
+    active_power_a:
+      name: ${devicename} Aktív teljesítmény A
+    active_power_b:
+      name: ${devicename} Aktív teljesítmény B
+      filters:
+        - lambda: return abs(x);
+    update_interval: 60s
+
+  - platform: ntc
+    sensor: temp_resistance_reading
+    name: ${devicename} Temperature
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    icon: "mdi:thermometer"
+    calibration:
+      b_constant: 3350
+      reference_resistance: 10kOhm
+      reference_temperature: 298.15K
+  - platform: resistance
+    id: temp_resistance_reading
+    sensor: temp_analog_reading
+    configuration: DOWNSTREAM
+    resistor: 32kOhm
+  - platform: adc
+    id: temp_analog_reading
+    pin: A0
+
+status_led:
+  pin:
+    number: GPIO0
+    inverted: yes
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO13
+    name: ${devicename} Switch1
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir) == 1;'
+            then:
+              - cover.stop: shutter   # <- a LOGIKAI cover-t állítjuk
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir) == -1;'
+                  then:
+                    - cover.stop: shutter
+                    - delay: 200ms
+              - cover.open: shutter
+
+  - platform: gpio
+    pin:
+      number: GPIO5
+    name: ${devicename} Switch2
+    filters: [ delayed_on: 20ms ]
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(moving_dir) == -1;'
+            then:
+              - cover.stop: shutter
+            else:
+              - if:
+                  condition:
+                    lambda: 'return id(moving_dir) == 1;'
+                  then:
+                    - cover.stop: shutter
+                    - delay: 200ms
+              - cover.close: shutter
+
+switch:
+  - platform: restart
+    name: ${devicename} Restart
+
+  # Relék: NEM internalok, HA-ban látszanak
+  - platform: gpio
+    id: relay_up
+    pin: GPIO4
+    name: Relé fel
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: [relay_up, relay_down]
+    interlock_wait_time: 200ms
+
+  - platform: gpio
+    id: relay_down
+    pin: GPIO15
+    name: Relé le
+    restore_mode: RESTORE_DEFAULT_OFF
+    interlock: [relay_up, relay_down]
+    interlock_wait_time: 200ms
+
+number:
+  - platform: template
+    name: "Redőny FEL idő (s)"
+    id: up_time_s
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 21
+    set_action:
+      - lambda: |-
+          id(shutter_raw).set_open_duration((uint32_t)(x * 1000));
+
+  - platform: template
+    name: "Redőny LE idő (s)"
+    id: down_time_s
+    unit_of_measurement: "s"
+    mode: BOX
+    min_value: ${nyitasiIdoMinimum}
+    max_value: ${nyitasiIdoMaximum}
+    step: 0.1
+    optimistic: true
+    restore_value: true
+    initial_value: 20
+    set_action:
+      - lambda: |-
+          id(shutter_raw).set_close_duration((uint32_t)(x * 1000));
+
+  - platform: template
+    name: "Redőny töréspont – nyitottság (%)"
+    id: knee_raw_open_pc
+    unit_of_measurement: "%"
+    mode: BOX
+    min_value: 1        # korábban 50 volt -> ezért nem engedte a 30-at
+    max_value: 99       # 0 vagy 100 kerülendő (osztás hiba miatt)
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: 30   # induláskor legyen rögtön 30%
+
+cover:
+  # NYERS, lineáris időalap (rejtve)
+  - platform: time_based
+    id: shutter_raw
+    internal: true
+    open_action:
+      - lambda: 'id(moving_dir) = 1;'
+      - switch.turn_on: relay_up
+    close_action:
+      - lambda: 'id(moving_dir) = -1;'
+      - switch.turn_on: relay_down
+    stop_action:
+      - switch.turn_off: relay_up
+      - switch.turn_off: relay_down
+      - lambda: 'id(moving_dir) = 0;'
+    open_duration: 21s
+    close_duration: 20s
+    manual_control: false
+    assumed_state: true
+
+  # LOGIKAI, kijelzett cover (korrigált)
+  - platform: template
+    id: shutter
+    name: "Redőny"
+    has_position: true
+
+    # NYITOTTSÁG (0=zárt, 1=nyitott) kiszámítása a nyersből
+    lambda: |-
+      float raw_open = id(shutter_raw).position;              // 0..1
+      float knee_raw  = id(knee_raw_open_pc).state / 100.0f;  // pl. 0.70
+      const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f; // pl. 0.90
+
+      float disp_open;
+      if (raw_open <= knee_raw) {
+        // [0 .. knee_raw]  ->  [0 .. knee_disp]
+        disp_open = raw_open * (knee_disp / knee_raw);
+      } else {
+        // [knee_raw .. 1]  ->  [knee_disp .. 1]
+        disp_open = knee_disp + (raw_open - knee_raw) * ((1.0f - knee_disp) / (1.0f - knee_raw));
+      }
+      return disp_open;
+
+    # HA célpozíció (NYITOTTSÁG 0..1) -> NYERS skála
+    position_action:
+      - lambda: |-
+          float target = pos;                                  // 0..1 (nyitottság)
+          float knee_raw  = id(knee_raw_open_pc).state / 100.0f;
+          const float knee_disp = (${ALSO_PONT_KIJELZETT_NYITOTTSAG_PC}) / 100.0f;
+
+          float target_raw_open;
+          if (target <= knee_disp) {
+            target_raw_open = target * (knee_raw / knee_disp);
+          } else {
+            target_raw_open = knee_raw + (target - knee_disp) * ((1.0f - knee_raw) / (1.0f - knee_disp));
+          }
+
+          auto call = id(shutter_raw).make_call();
+          call.set_position(target_raw_open);
+          call.perform();
+
+    open_action:
+      - cover.open: shutter_raw
+    close_action:
+      - cover.close: shutter_raw
+    stop_action:
+      - cover.stop: shutter_raw
+    assumed_state: true

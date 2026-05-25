@@ -1,0 +1,64 @@
+
+substitutions:
+  name: bedside-lamp
+  friendly_name: Balázs éjjelilámpa
+
+
+
+packages:
+  bslamp2:
+    url: https://github.com/mmakaay/esphome-xiaomi_bslamp2
+    ref: release/2026.4.0
+    files:
+      - packages/core.yaml
+      - packages/behavior_default.yaml
+      - packages/ota_feedback.yaml
+      - packages/activate_preset_svc.yaml
+    refresh: 0s
+
+
+
+
+
+wifi:
+  ssid: TorokHome_IoT
+  password: 851601Balazs9522Reka9513
+  manual_ip:
+    static_ip: 192.168.22.254
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+api:
+  encryption:
+    key: cihC+U/2cCLYwF6oIZ8R6FytYWMXn7hF54m8CABGVKA=
+
+    
+ota:
+  - platform: esphome
+    password: asdasdasd123
+
+
+captive_portal:
+    
+#external_components:
+#  source:
+#    type: git
+#    url: https://github.com/mmakaay/esphome-xiaomi_bslamp2
+#    ref: e9eece7ef7a23bf3a6d458fd27609926b876d9a4
+
+
+web_server:
+  port: 80
+
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: true
+
+bluetooth_proxy:
+
+
+
+
+switch:
+  - platform: restart
+    name: "balazs_ejjeli_lampa Restart"

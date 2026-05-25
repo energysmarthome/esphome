@@ -1,0 +1,77 @@
+esphome:
+  name: marciszoba-lampakapcsolo
+  friendly_name: marciszoba_lampakapcsolo
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "wpOa9yOJVFRhwGBjCKFhZHJTNuinXDvfuddLPISuwEc="
+
+ota:
+ - platform: esphome
+   password: "f6d1b4e2bddb9d0a0ef0e0ef6a56c680"
+
+wifi:
+  ap:
+    ssid: "kapcsolo"
+    password: "12345678"
+#  ssid: !secret wifi_ssid
+#  password: !secret wifi_password
+#  manual_ip:
+#    static_ip: 192.168.22.224
+#    gateway: 192.168.22.1
+#    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+
+
+captive_portal:
+
+
+web_server:
+  port: 80
+
+# Definiáljuk a reléket
+switch:
+
+  - platform: restart
+    name: "marciszobalampakapcsolo Restart"
+
+
+# Definiáljuk a beépített LED-et, ha van
+light:
+  - platform: binary
+    name: "Marci szoba Beépített LED"
+    output: led_output
+  - platform: binary
+    name: "Marci szoba lámpa"
+    output: led_output1
+    id: relay1
+
+output:
+  - platform: gpio
+    pin: GPIO13
+    inverted: true
+    id: led_output
+  - platform: gpio
+    pin: GPIO12
+    inverted: false
+    id: led_output1
+# Definiáljuk a gombokat
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Marci szoba lámpakapcsoló"
+    on_press:
+      - light.toggle: relay1
+
+

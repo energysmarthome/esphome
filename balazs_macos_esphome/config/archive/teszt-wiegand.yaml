@@ -1,0 +1,106 @@
+esphome:
+  name: teszt-wiegand
+  friendly_name: teszt_wiegand
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "y4JVtYzyC6wbrJgyRb5VLs/g6/FpqzdUrKV7BvEZnaA="
+
+ota:
+  - platform: esphome
+    password: "8e97e110e76aeb58aa20a9cc937ef4e0"
+
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.35
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "teszt_wiegand"
+    password: "0f4c873EwxHU"
+
+captive_portal:
+
+
+web_server:
+  port: 80
+
+
+# pink d26 és d0, másik d27 és d1
+wiegand:
+  - id: keypad
+    #you can change the d1 and d0 pins as you like, htis could be mandatory if you change the board
+    d0: GPIO26
+    d1: GPIO27
+    on_key:
+      - lambda: ESP_LOGI("KEY", "received key %d", x);
+    # on_tag:
+    #   - lambda: ESP_LOGI("TAG", "received tag %s", x.c_str());
+
+    on_tag:
+      - lambda: |
+          ESP_LOGI("TAG", "received tag %s", x.c_str());
+          id(tagcode).publish_state(x.c_str());
+
+
+    on_raw:
+      - lambda: ESP_LOGI("RAW", "received raw %d bits, value %llx", bits, value);
+
+key_collector:
+  - id: pincode_reader
+    source_id: keypad
+    #length can be changed if needed
+    min_length: 4
+    max_length: 4
+    #end key can be changed if needed
+    end_keys: "#" 
+    end_key_required: true
+    allowed_keys: "0123456789"
+    
+    #timeout ccan be changed if needed
+    timeout: 5s
+    on_progress:
+      - logger.log:
+          format: "input progress: '%s', started by '%c'"
+          args: [ 'x.c_str()', "(start == 0 ? '~' : start)" ]
+    on_result:
+      - logger.log:
+          format: "input result: '%s', started by '%c', ended by '%c'"
+          args: [ 'x.c_str()', "(start == 0 ? '~' : start)", "(end == 0 ? '~' : end)" ]
+      - lambda: id(keycode).publish_state(x.c_str());
+      - lambda: id(coderec).publish_state(true);
+      - delay: 200ms
+      - lambda: id(coderec).publish_state(false);
+    on_timeout:
+      - logger.log:
+          format: "input timeout: '%s', started by '%c'"
+          args: [ 'x.c_str()', "(start == 0 ? '~' : start)" ]
+
+text_sensor:
+  - platform: template
+    name: keycode
+    id: keycode
+  - platform: template
+    name: "Tagcode"
+    id: tagcode
+
+    
+binary_sensor:
+  - platform: template
+    name: code received
+    id: coderec

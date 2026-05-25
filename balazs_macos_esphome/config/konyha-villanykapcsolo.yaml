@@ -1,0 +1,139 @@
+esphome:
+  name: konyha-villanykapcsolo
+  friendly_name: konyha_villanykapcsolo
+
+  on_boot:
+    priority: -100
+    then:
+      - delay: 5s
+      - script.execute: sync_konyha_spot_to_ha_light
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "qV9E5b9YqsyQb1HYraZAyp/ywDQrMRNtgB889deTdnY="
+
+ota:
+  - platform: esphome
+    password: "e1cddb57a9258054859e2dd31d67ba00"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.228
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Konyha-Villanykapcsolo"
+    password: "vnqp01dkjPEI"
+
+captive_portal:
+    
+web_server:
+  port: 80
+
+# Definiáljuk a reléket
+light:
+  - platform: binary
+    name: "Konyha spot lámpák"
+    restore_mode: ALWAYS_OFF
+    output: led_output1
+    id: relay1
+
+  - platform: binary
+    name: "Konyha pult ledszalag dummy"
+    restore_mode: RESTORE_DEFAULT_OFF
+    output: ledszalag_ha_out
+    id: relay2
+    internal: true
+
+  - platform: binary
+    name: "Konyha villanykapcsoló Beépített LED"
+    output: led_output
+    restore_mode: RESTORE_DEFAULT_OFF
+  
+switch:
+  - platform: restart
+    name: "konyhavillanykapcsolo Restart"
+
+output:
+  - platform: gpio
+    pin: GPIO12
+    id: led_output1
+
+  - platform: template
+    id: ledszalag_ha_out
+    type: binary
+    write_action:
+      - if:
+          condition:
+            lambda: |-
+              return state;
+          then:
+            - homeassistant.action:
+                action: light.turn_on
+                data:
+                  entity_id: light.konyha_led_szalag
+          else:
+            - homeassistant.action:
+                action: light.turn_off
+                data:
+                  entity_id: light.konyha_led_szalag
+
+  - platform: gpio
+    pin: GPIO13
+    id: led_output
+    inverted: true
+
+# Definiáljuk a gombokat
+binary_sensor:
+  # Home Assistant spot lámpa állapota.
+  # Ez lesz az igazság forrása a Konyha spot relé/gomb háttérfényéhez.
+  - platform: homeassistant
+    id: konyha_spot_lampak_allapot
+    entity_id: light.konyha_spot_lampak
+    internal: true
+    on_state:
+      then:
+        - script.execute: sync_konyha_spot_to_ha_light
+
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Konyha spot gomb"
+    on_press:
+      - homeassistant.action:
+          action: light.toggle
+          data:
+            entity_id: light.konyha_spot_lampak
+
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Konyha pult ledszalag gomb"
+    on_press:
+      - light.toggle: relay2
+
+script:
+  - id: sync_konyha_spot_to_ha_light
+    mode: restart
+    then:
+      - if:
+          condition:
+            binary_sensor.is_on: konyha_spot_lampak_allapot
+          then:
+            - light.turn_on: relay1
+          else:
+            - light.turn_off: relay1
