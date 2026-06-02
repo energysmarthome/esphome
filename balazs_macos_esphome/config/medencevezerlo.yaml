@@ -45,78 +45,81 @@ one_wire:
     platform: gpio
 
 spi:
-  clk_pin: GPIO18        # SCK jel (órajel) 
-  mosi_pin: GPIO23       # MOSI jel (adatkimenet) 
-  id: spi_display        # Tetszőleges azonosító
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+  id: spi_display
 
 modbus:
   - uart_id: uart_modbus_client
     id: modbus_client
-
 
 modbus_controller:
   - id: modbus_client1
     modbus_id: modbus_client
     address: 1
     update_interval: 2s
+
   - id: modbus_client2
     modbus_id: modbus_client
     address: 2
     update_interval: 2s
-
 
 color:
   - id: my_red
     red: 100%
     green: 3%
     blue: 5%
+
 font:
   - file: "fonts/ARIAL.TTF"
     id: my_font
     size: 48
+
   - file: "fonts/ARIAL.TTF"
     id: font_10
     size: 18
+
   - file: "fonts/ARIAL.TTF"
     id: font_16
     size: 28
 
-
-
-
 sensor:
-### WIFI JELERŐSSÉG
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+  ### WIFI JELERŐSSÉG
+  - platform: wifi_signal
     name: "WiFi Signal dB"
     id: wifi_signal_db
     update_interval: 5s
     entity_category: "diagnostic"
 
-### HOME ASSISTANTBÓL INTEGRÁLT ENTITÁSOK
+  ### HOME ASSISTANTBÓL INTEGRÁLT ENTITÁSOK
   - platform: homeassistant
     entity_id: sensor.medence_homokszuro_napi_uzemido
-    internal: true          # nem publikáljuk vissza MQTT/API-n
+    internal: true
     id: homokszuronapiuzemido
+
   - platform: homeassistant
     entity_id: sensor.medencefutes_szivattyu_nyomasa
-    internal: true          # nem publikáljuk vissza MQTT/API-n
+    internal: true
     id: medencefutes_szivattyu_nyomasa
+
   - platform: homeassistant
     entity_id: sensor.medence_futes_delta_t
-    internal: true          # nem publikáljuk vissza MQTT/API-n
+    internal: true
     id: futesdeltat
     unit_of_measurement: "K"
 
-### DS18B20 HŐMÉRŐK ONE WIRE BUS-ON
+  ### DS18B20 HŐMÉRŐK ONE WIRE BUS-ON
   - platform: dallas_temp
     address: "0xb50b23744c6fcc28"
     id: medenceviz_homerseklet
     name: "Medencevíz hőmréséklet számításhoz"
+
   - platform: dallas_temp
     address: "0x9a0b2374c56c3f28"
     id: napkollektor_homerseklet
     name: "Napkollektortól jövő víz hőmérséklet számításhoz"
-#### BOARD 2 FESZÜLTSÉGMÉRÉSEK
+
+  ### BOARD 2 FESZÜLTSÉGMÉRÉSEK
   - platform: modbus_controller
     modbus_controller_id: modbus_client2
     name: "Board2 feszültség1"
@@ -126,50 +129,15 @@ sensor:
     value_type: U_WORD
     accuracy_decimals: 2
     filters:
-      - multiply: 0.01  # Konverzió az ADC értékből Voltba
-#   - platform: modbus_controller
-#     modbus_controller_id: modbus_client2
-#     name: "Board2 feszültség2"
-#     register_type: holding
-#     address: 161
-#     unit_of_measurement: "V"
-#     value_type: U_WORD
-#     accuracy_decimals: 2
-#     filters:
-#       - multiply: 0.01  # Konverzió az ADC értékből Voltba
-#   - platform: modbus_controller
-#     modbus_controller_id: modbus_client2
-#     name: "Board2 feszültség3"
-#     register_type: holding
-#     address: 162
-#     unit_of_measurement: "V"
-#     value_type: U_WORD
-#     accuracy_decimals: 2
-#     filters:
-#       - multiply: 0.01  # Konverzió az ADC értékből Voltba
-#   - platform: modbus_controller
-#     modbus_controller_id: modbus_client2
-#     name: "Board2 feszültség4"
-#     register_type: holding
-#     address: 163
-#     unit_of_measurement: "V"
-#     value_type: U_WORD
-#     accuracy_decimals: 2
-#     filters:
-#       - multiply: 0.01  # Konverzió az ADC értékből Voltba
+      - multiply: 0.01
 
-
-
-
-
-    
 display:
   - platform: ili9xxx
-    model: ST7735    # Kijelző típus 
-    cs_pin: GPIO5                # Chip Select 
-    dc_pin: GPIO2                # Data/Command jel 
-    reset_pin: GPIO4             # Hardveres reset 
-    update_interval: 5s          # Frissítési gyakoriság 
+    model: ST7735
+    cs_pin: GPIO5
+    dc_pin: GPIO2
+    reset_pin: GPIO4
+    update_interval: 5s
     invert_colors: false
     rotation: 0
     color_palette: 8BIT
@@ -193,29 +161,23 @@ display:
       it.printf(100, 108, id(font_10), "HOMOKSZURO:");
       it.printf(128, 125, id(font_16), "%s", id(homokszuroallapota).state ? "BE" : "KI");
 
-      /* FŰTÉS GOLYÓSCSAP*/
+      /* FŰTÉS GOLYÓSCSAP */
       it.printf(200, 0, id(font_10), "GOLYOSCSAP:");
-      it.printf(200, 17, id(font_16), "%s", id(golyoscsapirany).state);
+      auto golyoscsap_option = id(golyoscsapirany).current_option();
+      it.printf(200, 17, id(font_16), "%.*s", (int) golyoscsap_option.size(), golyoscsap_option.c_str());
 
       /* FŰTÉS */
       it.printf(0, 181, id(font_10), "FUTES:");
       it.printf(18, 198, id(font_16), "%s", id(open_and_delay_relay4).state ? "BE" : "KI");
 
-      /* FŰTŐ SZITVATTYÚ UTÁNI NYOMÁS */
+      /* FŰTŐ SZIVATTYÚ UTÁNI NYOMÁS */
       it.printf(100, 181,  id(font_10), "NYOMAS:");
       it.printf(125, 198, id(font_16), "%.1f mbar", id(medencefutes_szivattyu_nyomasa).state);
-
-
-
-########## KELLENE MÉG A GOLYÓSCSAP IRÁNYA ########
-
 
 output:
   - platform: ledc
     pin: GPIO22
     id: backlight_pwm
-
-#  it.printf(18, 198, id(font_16), "%s", id(medencefutes).state.c_str());
 
 light:
   - platform: monochromatic
@@ -224,175 +186,239 @@ light:
     id: back_light
     restore_mode: ALWAYS_ON
 
-
-
-
 switch:
-### RESTART ####################################################################
+  ### RESTART
   - platform: restart
     name: "medencevezerlo Restart"
 
-### 1-ES BOARD RELÉI ############################################################
+  ### 1-ES BOARD RELÉI
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence fűtés golyóscsap"
-    restore_mode: ALWAYS_ON
     id: relay3
     register_type: coil
-    address: 0 # A megadott relécím
-    bitmask: 1    # A megfelelő bit a vezérléshez
+    restore_mode: RESTORE_DEFAULT_OFF
+    address: 0
+    bitmask: 1
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence fűtés golyóscsap irány1"
     id: relay2
     register_type: coil
     restore_mode: RESTORE_DEFAULT_OFF
-    address: 1 # A megadott relécím
-    bitmask: 1    # A megfelelő bit a vezérléshez
+    address: 1
+    bitmask: 1
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence fűtés golyóscsap irány2"
     id: relay1
     register_type: coil
     restore_mode: RESTORE_DEFAULT_OFF
-    address: 2 # A megadott relécím
-    bitmask: 1    # A megfelelő bit a vezérléshez
+    address: 2
+    bitmask: 1
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence töltőszelep"
     register_type: coil
     restore_mode: RESTORE_DEFAULT_OFF
-    address: 3 # A megadott relécím
-    bitmask: 1    # A megfelelő bit a vezérléshez
+    address: 3
+    bitmask: 1
 
-### 2-ES BOARD RELÉI ####################################################
-  #- platform: modbus_controller
-  #  modbus_controller_id: modbus_client2
-  #  name: "Medence homokszűrő"
-  #  register_type: coil
-  #  restore_mode: RESTORE_DEFAULT_OFF
-  #  address: 0 # A megadott relécím
-  #  bitmask: 1    # A megfelelő bit a vezérléshez
-  #- platform: modbus_controller
-  #  modbus_controller_id: modbus_client2
-  #  name: "Medence fűtő szivattyú"
-  #  register_type: coil
-  # restore_mode: RESTORE_DEFAULT_OFF
-  #  address: 1 # A megadott relécím
-  #  bitmask: 1    # A megfelelő bit a vezérléshez
+  ### 2-ES BOARD RELÉI
   - platform: modbus_controller
     modbus_controller_id: modbus_client2
     name: "Medence fűtő szivattyú dugalj"
-    register_type: coil
     id: relay4
+    register_type: coil
     restore_mode: RESTORE_DEFAULT_OFF
-    address: 2 # A megadott relécím
-    bitmask: 1    # A megfelelő bit a vezérléshez
+    address: 2
+    bitmask: 1
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client2
     name: "Medence homokszűrő"
-    register_type: coil
     id: homokszuro_switch
+    register_type: coil
     restore_mode: RESTORE_DEFAULT_OFF
-    address: 3 # A megadott relécím
-    bitmask: 1    # A megfelelő bit a vezérléshez
+    address: 3
+    bitmask: 1
 
-
-
-
-    
-#  - platform: template
-#    id: open_and_delay_relay4
-#    name: "Medence fűtő szivattyú"
-#    optimistic: true
-#    turn_on_action:
-#      - select.set:
-#          id: golyoscsapirany
-#          option: "Nyitás"
-#      - switch.turn_on: relay3 #golyóscsap nyitása
-#      - delay: 10s
-#      - switch.turn_on: relay4 #szivattyú indítása
-#    turn_off_action:
-#      - switch.turn_off: relay4
-#      - select.set:
-#          id: golyoscsapirany
-#          option: "Zárás"
-
-
+  ### LOGIKAI FŰTÉS KAPCSOLÓ
   - platform: template
     id: open_and_delay_relay4
     name: "Medence fűtő szivattyú"
     optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
+
     turn_on_action:
+      - lambda: |-
+          ESP_LOGI("futes", "Futes inditas. Homokszuro: %s",
+                   id(homokszuroallapota).state ? "ON" : "OFF");
+
       - if:
           condition:
-            switch.is_on: homokszuro_switch
+            binary_sensor.is_on: homokszuroallapota
+
           then:
             # HA a homokszűrő üzemel:
-            # először induljon a fűtés szivattyú zárt / fojtott ágra
+            # először induljon a fűtőszivattyú
             - switch.turn_on: relay4
-            # csak rövid ideig maradjon zárt állapotban
-            - delay: 1s
-            # utána nyisson a golyóscsap
-            - select.set:
-                id: golyoscsapirany
-                option: "Nyitás"
-            - switch.turn_on: relay3
+
+            # Várjuk meg, hogy a Modbus visszajelzés szerint tényleg bekapcsolt
+            - wait_until:
+                condition:
+                  binary_sensor.is_on: futoszivattyu_dugalj_allapot
+                timeout: 10s
+
+            # Csak akkor nyitunk golyóscsapot, ha a szivattyú tényleg ON
+            - if:
+                condition:
+                  binary_sensor.is_on: futoszivattyu_dugalj_allapot
+                then:
+                  - lambda: |-
+                      ESP_LOGI("futes", "Futoszivattyu ON visszajelzes megvan, golyoscsap nyitas indul.");
+
+                  # Motorengedélyezés biztosan OFF
+                  - switch.turn_off: relay3
+                  - delay: 300ms
+
+                  # Irány beállítása nyitásra
+                  - select.set:
+                      id: golyoscsapirany
+                      option: "Nyitás"
+
+                  # Irányrelék stabilizálása
+                  - delay: 300ms
+
+                  # Golyóscsap motor indítása
+                  - switch.turn_on: relay3
+
+                  # Nyitási idő
+                  - delay: 10s
+
+                  # Golyóscsap motor leállítása
+                  - switch.turn_off: relay3
+
+                else:
+                  - lambda: |-
+                      ESP_LOGW("futes", "Futoszivattyu nem adott ON visszajelzest 10 mp alatt, golyoscsap nyitas tiltva.");
+
           else:
             # HA a homokszűrő nem üzemel:
-            # először nyisson a golyóscsap
+            # először nyisson a golyóscsap, utána induljon a fűtőszivattyú
+            - lambda: |-
+                ESP_LOGI("futes", "Homokszuro OFF, eloszor golyoscsap nyitas.");
+
+            # Motorengedélyezés biztosan OFF
+            - switch.turn_off: relay3
+            - delay: 300ms
+
+            # Irány beállítása nyitásra
             - select.set:
                 id: golyoscsapirany
                 option: "Nyitás"
+
+            # Irányrelék stabilizálása
+            - delay: 300ms
+
+            # Golyóscsap motor indítása
             - switch.turn_on: relay3
-            # várunk, amíg a golyóscsap kinyit
+
+            # Nyitási idő
             - delay: 10s
-            # utána induljon a fűtés szivattyú
+
+            # Golyóscsap motor leállítása
+            - switch.turn_off: relay3
+
+            # Fűtőszivattyú indítása
             - switch.turn_on: relay4
+
     turn_off_action:
+      - lambda: |-
+          ESP_LOGI("futes", "Futes leallitas. Homokszuro: %s",
+                   id(homokszuroallapota).state ? "ON" : "OFF");
+
       - if:
           condition:
-            switch.is_on: homokszuro_switch
+            binary_sensor.is_on: homokszuroallapota
+
           then:
             # HA a homokszűrő ON:
-            # először zárjon a golyóscsap
+            # először zárjon a golyóscsap, utána álljon le a fűtőszivattyú
+            - lambda: |-
+                ESP_LOGI("futes", "Homokszuro ON, eloszor golyoscsap zaras.");
+
+            # Motorengedélyezés biztosan OFF
+            - switch.turn_off: relay3
+            - delay: 300ms
+
+            # Irány beállítása zárásra
             - select.set:
                 id: golyoscsapirany
                 option: "Zárás"
+
+            # Irányrelék stabilizálása
+            - delay: 300ms
+
+            # Golyóscsap motor indítása
             - switch.turn_on: relay3
-            # várunk, amíg a golyóscsap lezár
+
+            # Zárási idő
             - delay: 6s
-            # utána álljon le a fűtő szivattyú
+
+            # Golyóscsap motor leállítása
+            - switch.turn_off: relay3
+
+            # Fűtőszivattyú leállítása
             - switch.turn_off: relay4
+
           else:
             # HA a homokszűrő OFF:
-            # először leállhat a fűtő szivattyú
+            # először álljon le a fűtőszivattyú, utána zárjon a golyóscsap
+            - lambda: |-
+                ESP_LOGI("futes", "Homokszuro OFF, eloszor futoszivattyu leallitas.");
+
+            # Fűtőszivattyú leállítása
             - switch.turn_off: relay4
-            # rövid nyomáslecsengés
+
+            # Rövid nyomáslecsengés
             - delay: 2s
-            # utána zárjon a golyóscsap
+
+            # Motorengedélyezés biztosan OFF
+            - switch.turn_off: relay3
+            - delay: 300ms
+
+            # Irány beállítása zárásra
             - select.set:
                 id: golyoscsapirany
                 option: "Zárás"
+
+            # Irányrelék stabilizálása
+            - delay: 300ms
+
+            # Golyóscsap motor indítása
             - switch.turn_on: relay3
 
-          
+            # Zárási idő
+            - delay: 6s
 
-
+            # Golyóscsap motor leállítása
+            - switch.turn_off: relay3
 
 binary_sensor:
-  #### HOME ASSISTANTBÓL INTEGRÁLT ENTITÁSOK ################
+  ### HOME ASSISTANTBÓL INTEGRÁLT ENTITÁSOK
   - platform: homeassistant
-    id: furdesmod      # helyi név
+    id: furdesmod
     entity_id: input_boolean.nr_auto_vezerles_medencefurdesmod
-    internal: true         # HA-ban nem jelenik meg új érzékelőként
+    internal: true
 
-
-  #### 6 DARAB NYOMÓGOMB  ####################################
+  ### 6 DARAB NYOMÓGOMB
   - platform: gpio
     filters:
-     - invert:
+      - invert:
     pin:
       number: GPIO13
       mode:
@@ -400,9 +426,10 @@ binary_sensor:
         pullup: true
     name: "nyomógomb1"
     device_class: "window"
+
   - platform: gpio
     filters:
-     - invert:
+      - invert:
     pin:
       number: GPIO14
       mode:
@@ -410,9 +437,10 @@ binary_sensor:
         pullup: true
     name: "nyomógomb2"
     device_class: "window"
+
   - platform: gpio
     filters:
-     - invert:
+      - invert:
     pin:
       number: GPIO26
       mode:
@@ -420,9 +448,10 @@ binary_sensor:
         pullup: true
     name: "nyomógomb3"
     device_class: "window"
+
   - platform: gpio
     filters:
-     - invert:
+      - invert:
     pin:
       number: GPIO25
       mode:
@@ -430,19 +459,21 @@ binary_sensor:
         pullup: true
     name: "nyomógomb4"
     device_class: "window"
+
   - platform: gpio
+    filters:
+      - invert:
     pin:
       number: GPIO32
       mode:
         input: true
         pullup: true
     name: "nyomógomb5"
-    filters:
-     - invert:
     device_class: "window"
+
   - platform: gpio
     filters:
-     - invert:
+      - invert:
     pin:
       number: GPIO27
       mode:
@@ -451,182 +482,86 @@ binary_sensor:
     name: "nyomógomb6"
     device_class: "window"
 
-
-### 1-ES BOARD RELÉI – ÁLLAPOT FIGYELÉS (igaz, hogy 4 reléje van csak, de 8 relé állapotát kell lekérdezni, hogy normális választ adjon a board modbuson, ezért van az első 3 után internal allitva, hogy ne jelenlenek meg HA-ba)
-
+  ### 1-ES BOARD RELÉI – ÁLLAPOT FIGYELÉS
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence fűtés golyóscsap állapot"
     register_type: coil
     address: 0
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence fűtés golyóscsap irány1 állapot"
     register_type: coil
     address: 1
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Medence fűtés golyóscsap irány2 állapot"
     register_type: coil
     address: 2
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Relé 4 állapot"
     register_type: coil
-    internal: True
+    internal: true
     address: 3
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Relé 5 állapot"
     register_type: coil
-    internal: True
+    internal: true
     address: 4
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Relé 6 állapot"
     register_type: coil
-    internal: True
+    internal: true
     address: 5
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Relé 7 állapot"
     register_type: coil
-    internal: True
+    internal: true
     address: 6
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client1
     name: "Relé 8 állapot"
     register_type: coil
-    internal: True
+    internal: true
     address: 7
     device_class: power
 
-
-
-### 2-ES BOARD RELÉI - ÁLLAPOT FIGYELÉS ############################
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client2
-  #   name: "Medence homokszűrő állapot"
-  #   address: 0
-  #   register_type: coil
-  #   bitmask: 1
-  #   device_class: power
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client2
-  #   name: "Medence fűtő szivattyú állapot"
-  #   address: 1
-  #   register_type: coil
-  #   bitmask: 1
-  #   device_class: power
+  ### 2-ES BOARD RELÉI - ÁLLAPOT FIGYELÉS
   - platform: modbus_controller
     modbus_controller_id: modbus_client2
     name: "Medence fűtő szivattyú dugalj állapot"
+    id: futoszivattyu_dugalj_allapot
     address: 2
     register_type: coil
     bitmask: 1
     device_class: power
+
   - platform: modbus_controller
     modbus_controller_id: modbus_client2
     name: "Medence homokszűrő állapot"
-    address: 3
     id: homokszuroallapota
+    address: 3
     register_type: coil
     bitmask: 1
     device_class: power
-
-
-
-
-  # #### EGYES BOARD 4 DIGITÁLIS BEMENETE ############################
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 1"
-  #   register_type: discrete_input
-  #   address: 0
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 2"
-  #   register_type: discrete_input
-  #   address: 1
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 3"
-  #   register_type: discrete_input
-  #   address: 2
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 4"
-  #   register_type: discrete_input
-  #   address: 3
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 5 nemlétező"
-  #   register_type: discrete_input
-  #   address: 4
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 6 nemlétező"
-  #   register_type: discrete_input
-  #   address: 5
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 7 nemlétező"
-  #   register_type: discrete_input
-  #   address: 6
-  #   filters:
-  #     - invert:
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client1
-  #   name: "Board1 Bemenet 8 nemlétező"
-  #   register_type: discrete_input
-  #   address: 7
-  #   filters:
-  #     - invert:
-  # #### KETTES BOARD 4 DIGITÁLIS BEMENETE ########################
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client2
-  #   name: "Board2 Bemenet 1"
-  #   register_type: discrete_input
-  #   address: 0
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client2
-  #   name: "Board2 Bemenet 2"
-  #   register_type: discrete_input
-  #   address: 1
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client2
-  #   name: "Board2 Bemenet 3"
-  #   register_type: discrete_input
-  #   address: 2
-  # - platform: modbus_controller
-  #   modbus_controller_id: modbus_client2
-  #   name: "Board2 Bemenet 4"
-  #   register_type: discrete_input
-  #   address: 3
-
-
-
-
-
 
 select:
   - platform: template
@@ -640,7 +575,8 @@ select:
     on_value:
       then:
         - lambda: |-
-            const std::string &mode = id(golyoscsapirany).state;
+            auto mode = id(golyoscsapirany).current_option();
+
             if (mode == "Nyitás") {
               id(relay1).turn_on();
               id(relay2).turn_on();
@@ -648,8 +584,3 @@ select:
               id(relay1).turn_off();
               id(relay2).turn_off();
             }
-
-
-
-
-

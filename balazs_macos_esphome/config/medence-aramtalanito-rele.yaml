@@ -1,6 +1,6 @@
 substitutions:
-  device_name: 00008_locsolorendszer_kor1
-  friendly_name: 00008_locsolorendszer_kor1
+  device_name: "medence-aramtalanito-rele"
+  friendly_name: Medence áramtalanító relé
 
 esphome:
   name: ${device_name}
@@ -27,24 +27,45 @@ ota:
 
 wifi:
   ap:
-    ssid: "locsolo_kor1"
+    ssid: "medence_aramtalanito_rele"
     password: "12345678"
-
-
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.22.88
+    gateway: 192.168.22.1
+    subnet: 255.255.255.0
+    
 captive_portal:
 
 web_server:
 
-output:
-  - platform: gpio
-    id: relay_output
-    pin: GPIO5
+
+
+
+
+preferences:
+  # Azonnal mentse flash-be a változást.
+  # Figyelem: több flash írást jelent.
+  flash_write_interval: 0s
 
 switch:
-  - platform: output
+  - platform: gpio
     id: relay
-    name: "${friendly_name} Relay"
-    output: relay_output
+    name: "Medence áramtalanító relé"
+    pin: GPIO5
+    restore_mode: RESTORE_DEFAULT_OFF
+
+
+
+
+
+
+
+
+
+
+
 
 binary_sensor:
   - platform: gpio
@@ -57,8 +78,8 @@ binary_sensor:
     filters:
       - delayed_on: 20ms
       - delayed_off: 20ms
-    on_press:
-      - switch.toggle: relay
+#    on_press:
+#      - switch.toggle: relay
 
   - platform: gpio
     id: button

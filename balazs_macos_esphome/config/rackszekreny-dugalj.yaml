@@ -9,10 +9,8 @@ esp8266:
 preferences:
   flash_write_interval: 5min
 
-# Enable logging
 logger:
 
-# Enable Home Assistant API
 api:
   encryption:
     key: "7lQeojZckryLmVcu/nvXw08FSsLWg9aa5T4825lLvg8="
@@ -29,7 +27,6 @@ wifi:
     gateway: 192.168.22.1
     subnet: 255.255.255.0
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Medence-Futes-Szivattyu-Dugalj"
     password: "Sph39HwCML5Z"
@@ -45,62 +42,13 @@ time:
 
 substitutions:
   device_name: "Medence fűtés szivattyú dugalj"
-  # Higher value gives lower watt readout
-  current_res: "0.004"
-  # Lower value gives lower voltage readout
-  voltage_div: "738"
-  # Max Power is 3450W for 15A and 2300W for 10A
+
+  # BlitzWolf BW-SHP6 15A, 2020 / újabb verzió
+  current_res: "0.00117"
+  voltage_div: "755"
   max_power: "3450"
-  # 2020 model uses GPIO4 for CF1
   cf1_pin: GPIO04
 
-number:
-  - platform: template
-    name: "${device_name} feszültség kalibráció"
-    id: voltage_cal
-    optimistic: true
-    restore_value: true
-    initial_value: 1.000
-    min_value: 0.500
-    max_value: 5
-    step: 0.001
-    mode: box
-    icon: mdi:tune
-    on_value:
-      then:
-        - component.update: voltage_calibrated
-
-  - platform: template
-    name: "${device_name} áram kalibráció"
-    id: current_cal
-    optimistic: true
-    restore_value: true
-    initial_value: 1.000
-    min_value: 0.500
-    max_value: 5
-    step: 0.001
-    mode: box
-    icon: mdi:tune
-    on_value:
-      then:
-        - component.update: current_calibrated
-
-  - platform: template
-    name: "${device_name} teljesítmény kalibráció"
-    id: power_cal
-    optimistic: true
-    restore_value: true
-    initial_value: 1.000
-    min_value: 0.500
-    max_value: 5
-    step: 0.001
-    mode: box
-    icon: mdi:tune
-    on_value:
-      then:
-        - component.update: power
-
-# Button configuration
 binary_sensor:
   - platform: gpio
     name: "${device_name} gomb"
@@ -112,14 +60,12 @@ binary_sensor:
       then:
         - switch.toggle: relay
 
-# Setup of LED's used in displaying Switch status
 output:
   - platform: gpio
     pin: GPIO0
     inverted: true
     id: led
 
-# Config for switch
 switch:
   - platform: gpio
     pin: GPIO15
@@ -131,99 +77,50 @@ switch:
     on_turn_off:
       - output.turn_off: led
 
-# Status LED for connection
 status_led:
   pin:
     number: GPIO2
     inverted: true
 
-# Sensors for Voltage (V), Current (A), Power (W), Daily energy usage (kWh)
 sensor:
   - platform: hlw8012
     sel_pin:
       number: GPIO12
       inverted: true
-    cf_pin: GPIO5
+    cf_pin: GPIO05
     cf1_pin: ${cf1_pin}
     current_resistor: ${current_res}
     voltage_divider: ${voltage_div}
 
     current:
-      name: "${device_name} nyers áram"
-      id: current_raw
-      internal: true
+      name: "${device_name} áram"
       unit_of_measurement: "A"
       accuracy_decimals: 3
-      on_value:
-        then:
-          - component.update: current_calibrated
+      icon: mdi:flash-outline
+      force_update: true
 
     voltage:
-      name: "${device_name} nyers feszültség"
-      id: voltage_raw
-      internal: true
+      name: "${device_name} feszültség"
       unit_of_measurement: "V"
       accuracy_decimals: 1
-      on_value:
-        then:
-          - component.update: voltage_calibrated
+      icon: mdi:flash-outline
+      force_update: true
 
     power:
-      name: "${device_name} nyers teljesítmény"
-      id: power_raw
-      internal: true
+      name: "${device_name} teljesítmény"
       unit_of_measurement: "W"
       accuracy_decimals: 1
-      on_value:
-        then:
-          - component.update: power
+      id: power
+      icon: mdi:flash-outline
+      force_update: true
+      on_value_range:
+        - above: ${max_power}
+          then:
+            - output.turn_off: led
+            - switch.turn_off: relay
 
     change_mode_every: 4
     update_interval: 10s
-
-  - platform: template
-    name: "${device_name} áram"
-    id: current_calibrated
-    unit_of_measurement: "A"
-    accuracy_decimals: 3
-    icon: mdi:flash-outline
-    update_interval: never
-    lambda: |-
-      if (isnan(id(current_raw).state)) {
-        return NAN;
-      }
-      return id(current_raw).state * id(current_cal).state;
-
-  - platform: template
-    name: "${device_name} feszültség"
-    id: voltage_calibrated
-    unit_of_measurement: "V"
-    accuracy_decimals: 1
-    icon: mdi:flash-outline
-    update_interval: never
-    lambda: |-
-      if (isnan(id(voltage_raw).state)) {
-        return NAN;
-      }
-      return id(voltage_raw).state * id(voltage_cal).state;
-
-  - platform: template
-    name: "${device_name} teljesítmény"
-    id: power
-    unit_of_measurement: "W"
-    accuracy_decimals: 1
-    icon: mdi:flash-outline
-    update_interval: never
-    lambda: |-
-      if (isnan(id(power_raw).state)) {
-        return NAN;
-      }
-      return id(power_raw).state * id(power_cal).state;
-    on_value_range:
-      - above: ${max_power}
-        then:
-          - output.turn_off: led
-          - switch.turn_off: relay
 
   - platform: total_daily_energy
     name: "${device_name} napi fogyasztás"

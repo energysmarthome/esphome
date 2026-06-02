@@ -166,7 +166,7 @@ switch:
   - platform: gpio #
     pin:
       number: GPIO21
-      inverted: true
+      inverted: false
     name: "Háztartási ablaknyitó"
   - platform: gpio #
     pin:
