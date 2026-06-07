@@ -35,16 +35,16 @@ substitutions:
   error_cloud_expired_sound_file: https://github.com/esphome/home-assistant-voice-pe/raw/dev/sounds/error_cloud_expired.mp3
 
   # Stealth listen (TCP WAV to go2rtc listener)
-  stealth_stream_host: "192.168.22.203"
+  stealth_stream_host: "192.168.22.202"
   stealth_stream_port: "12346"
 
 esphome:
   name: konyha_havoice
   friendly_name: Konyha HA voice
   name_add_mac_suffix: true
-  min_version: 2026.2.0
+  min_version: 2026.5.0
   includes:
-    - stealth_udp.h
+    - stealth_udp_reviewed.h
   on_boot:
     priority: 375
     then:
@@ -98,15 +98,16 @@ wifi:
   on_connect:
     - lambda: id(improv_ble_in_progress) = false;
     - script.execute: control_leds
+    # Enable/disable Sendspin static adjustment delay if the jack is plugged in or not
+    - if:
+        condition:
+          - binary_sensor.is_on: jack_plugged
+        then:
+          - sendspin.media_source.enable_static_delay_adjustment:
+        else:
+          - sendspin.media_source.disable_static_delay_adjustment:
   on_disconnect:
     - script.execute: control_leds
-
-
-
-
-
-
-http_request:
 
 network:
   enable_ipv6: true
@@ -117,19 +118,19 @@ logger:
     sensor: WARN  # avoids logging debug sensor updates
 
 api:
-  encryption:
-    key: 1imMR+O7BNN+hWw0vhZiEAqqnjwADO/hoNhiGlnmI6U=
   id: api_id
   on_client_connected:
     - script.execute: control_leds
   on_client_disconnected:
     - script.execute: control_leds
-
-
+  encryption:
+    key: 1imMR+O7BNN+hWw0vhZiEAqqnjwADO/hoNhiGlnmI6U=
 
 ota:
   - platform: esphome
     id: ota_esphome
+
+safe_mode:
 
 i2c:
   - id: internal_i2c
@@ -245,14 +246,14 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
-  # Stealth listen: streams mic audio to go2rtc via TCP WAV (no intercom)
+  # Stealth listen: streams mic audio to TCP WAV listener. Manual only; never restore ON at boot.
   - platform: template
     id: stealth_listen_switch
     name: Stealth listen
     icon: "mdi:headphones"
     entity_category: config
     optimistic: true
-    restore_mode: RESTORE_DEFAULT_OFF
+    restore_mode: ALWAYS_OFF
     turn_on_action:
       - script.execute: stealth_listen_start
     turn_off_action:
@@ -380,17 +381,11 @@ binary_sensor:
                                                   sound_file: "center_button_press_sound"
                                               - delay: 300ms
                                               - if:
-
                                                   condition:
-
                                                     switch.is_on: stealth_listen_switch
-
                                                   then:
-
                                                     - script.execute: stealth_listen_stop
-
                                                     - switch.turn_off: stealth_listen_switch
-
                                               - voice_assistant.start:
       # Double Click
       #  . Exposed as an event entity. To be used in automations inside Home Assistant
@@ -573,9 +568,11 @@ binary_sensor:
       number: GPIO17
     # When the jack is plugged in:
     #  - LED animation
+    #  - Enable Sendspin static delay adjustment to apply the persisted delay when using the external audio output
     #  - Sound played
     on_press:
       - lambda: id(jack_plugged_recently) = true;
+      - sendspin.media_source.enable_static_delay_adjustment:
       - script.execute: control_leds
       - delay: 200ms
       - script.execute:
@@ -587,10 +584,12 @@ binary_sensor:
       - script.execute: control_leds
     # When the jack is unplugged:
     #  - LED animation
+    #  - Disable Sendspin static delay adjustment when using the internal speaker
     #  - Sound played
     on_release:
       - lambda: id(jack_unplugged_recently) = true;
       - script.execute: control_leds
+      - sendspin.media_source.disable_static_delay_adjustment:
       - delay: 200ms
       - script.execute:
           id: play_sound
@@ -1077,18 +1076,28 @@ script:
   - id: stealth_listen_start
     mode: restart
     then:
-      - lambda: id(stealth_listen_enabled) = true;
-      # Ensure VA / wake word aren't using the mic while streaming
       - if:
           condition:
-            voice_assistant.is_running:
+            and:
+              - wifi.connected:
+              - api.connected:
           then:
-            - voice_assistant.stop:
-      - micro_wake_word.stop:
-      - lambda: |-
-          stealth_udp_begin_("${stealth_stream_host}", atoi("${stealth_stream_port}"));
-      - microphone.capture:
-          id: i2s_mics
+            - lambda: id(stealth_listen_enabled) = true;
+            - if:
+                condition:
+                  voice_assistant.is_running:
+                then:
+                  - voice_assistant.stop:
+            - micro_wake_word.stop:
+            - delay: 250ms
+            - lambda: |-
+                stealth_udp_begin_("${stealth_stream_host}", atoi("${stealth_stream_port}"));
+            - delay: 250ms
+            - microphone.capture:
+                id: i2s_mics
+          else:
+            - lambda: id(stealth_listen_enabled) = false;
+            - switch.turn_off: stealth_listen_switch
 
   - id: stealth_listen_stop
     mode: restart
@@ -1096,9 +1105,9 @@ script:
       - lambda: id(stealth_listen_enabled) = false;
       - microphone.stop_capture:
           id: i2s_mics
+      - delay: 100ms
       - lambda: |-
           stealth_udp_end_();
-      # Resume wake word if connected to HA
       - if:
           condition:
             api.connected:
@@ -1472,12 +1481,14 @@ script:
   # Script executed when the timer is ringing, to repeat the timer finished sound.
   - id: enable_repeat_one
     then:
+      # Turn on the repeat mode and pause for 500 ms between playlist items/repeats
       - media_player.repeat_one:
           id: external_media_player
           announcement: true
-      # Turn on the repeat mode and pause for 500 ms between playlist items/repeats
-      - lambda: |-
-            id(external_media_player)->set_playlist_delay_ms(1, 500);
+      - speaker_source.set_playlist_delay:
+          id: external_media_player
+          pipeline: announcement
+          delay: 500ms
 
   # Script execute when the timer is done ringing, to disable repeat mode.
   - id: disable_repeat
@@ -1486,8 +1497,10 @@ script:
       - media_player.repeat_off:
           id: external_media_player
           announcement: true
-      - lambda: |-
-            id(external_media_player)->set_playlist_delay_ms(1, 0);
+      - speaker_source.set_playlist_delay:
+          id: external_media_player
+          pipeline: announcement
+          delay: 0ms
 
   # Script executed when we want to play sounds on the device.
   - id: play_sound
@@ -1506,7 +1519,7 @@ script:
           if ( (id(external_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
             id(external_media_player)
               ->make_call()
-              .set_media_url("file://" + sound_file)
+              .set_media_url("audio-file://" + sound_file)
               .set_announcement(true)
               .perform();
           }
@@ -1595,22 +1608,7 @@ microphone:
       then:
         - lambda: |-
             if (!id(stealth_listen_enabled)) return;
-            // HA Voice Preview mic: 32-bit stereo I2S. Stealth stream expects 16-bit mono PCM @16kHz (see stealth_udp.h WAV header).
-            // Convert: take left channel, downscale to 16-bit, little-endian.
-            const size_t in_bytes = x.size();
-            if (in_bytes < 8) return;  // need at least one stereo frame (L32 + R32)
-            const size_t frames = in_bytes / 8;
-            std::vector<uint8_t> out;
-            out.resize(frames * 2);
-            const uint8_t *p = x.data();
-            for (size_t i = 0; i < frames; i++) {
-              int32_t l = (int32_t)(p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24));
-              int16_t s = (int16_t)(l >> 16);
-              out[i*2 + 0] = (uint8_t)(s & 0xFF);
-              out[i*2 + 1] = (uint8_t)((s >> 8) & 0xFF);
-              p += 8; // skip R as well
-            }
-            stealth_udp_send_(out);
+            stealth_udp_send_s32le_stereo_as_s16le_mono_(x.data(), x.size());
 
 speaker:
   # Hardware speaker output
@@ -1653,51 +1651,54 @@ speaker:
 
 sendspin:
   id: sendspin_hub
-  task_stack_in_psram: true
-  kalman_process_error: 0.01
+  task_stack_in_psram: false
 
+audio_file:
+  - id: center_button_press_sound
+    file: ${center_button_press_sound_file}
+  - id: center_button_double_press_sound
+    file: ${center_button_double_press_sound_file}
+  - id: center_button_triple_press_sound
+    file: ${center_button_triple_press_sound_file}
+  - id: center_button_long_press_sound
+    file: ${center_button_long_press_sound_file}
+  - id: factory_reset_initiated_sound
+    file: ${factory_reset_initiated_sound_file}
+  - id: factory_reset_cancelled_sound
+    file: ${factory_reset_cancelled_sound_file}
+  - id: factory_reset_confirmed_sound
+    file: ${factory_reset_confirmed_sound_file}
+  - id: jack_connected_sound
+    file: ${jack_connected_sound_file}
+  - id: jack_disconnected_sound
+    file: ${jack_disconnected_sound_file}
+  - id: mute_switch_on_sound
+    file: ${mute_switch_on_sound_file}
+  - id: mute_switch_off_sound
+    file: ${mute_switch_off_sound_file}
+  - id: timer_finished_sound
+    file: ${timer_finished_sound_file}
+  - id: wake_word_triggered_sound
+    file: ${wake_word_triggered_sound_file}
+  - id: easter_egg_tick_sound
+    file: ${easter_egg_tick_sound_file}
+  - id: easter_egg_tada_sound
+    file: ${easter_egg_tada_sound_file}
+  - id: error_cloud_expired
+    file: ${error_cloud_expired_sound_file}
 
 media_source:
-  - platform: sendspin
-    id: sendspin_source
-  - platform: http_request
-    id: http_source
+  - platform: audio_file
+    id: audio_file_announcement_source
+  - platform: audio_http
+    id: http_announcement_source
+    buffer_size: 250000
+  - platform: audio_http
+    id: http_media_source
     buffer_size: 500000
-  - platform: file
-    id: file_source
-    files:
-      - id: center_button_press_sound
-        file: ${center_button_press_sound_file}
-      - id: center_button_double_press_sound
-        file: ${center_button_double_press_sound_file}
-      - id: center_button_triple_press_sound
-        file: ${center_button_triple_press_sound_file}
-      - id: center_button_long_press_sound
-        file: ${center_button_long_press_sound_file}
-      - id: factory_reset_initiated_sound
-        file: ${factory_reset_initiated_sound_file}
-      - id: factory_reset_cancelled_sound
-        file: ${factory_reset_cancelled_sound_file}
-      - id: factory_reset_confirmed_sound
-        file: ${factory_reset_confirmed_sound_file}
-      - id: jack_connected_sound
-        file: ${jack_connected_sound_file}
-      - id: jack_disconnected_sound
-        file: ${jack_disconnected_sound_file}
-      - id: mute_switch_on_sound
-        file: ${mute_switch_on_sound_file}
-      - id: mute_switch_off_sound
-        file: ${mute_switch_off_sound_file}
-      - id: timer_finished_sound
-        file: ${timer_finished_sound_file}
-      - id: wake_word_triggered_sound
-        file: ${wake_word_triggered_sound_file}
-      - id: easter_egg_tick_sound
-        file: ${easter_egg_tick_sound_file}
-      - id: easter_egg_tada_sound
-        file: ${easter_egg_tada_sound_file}
-      - id: error_cloud_expired
-        file: ${error_cloud_expired_sound_file}
+  - platform: sendspin
+    id: sendspin_media_source
+    fixed_delay: 480 microseconds  # The AIC3204 DAC used, as configured, on the VPE delays audio by 480 microseconds
 
 media_player:
   - platform: sendspin
@@ -1705,23 +1706,25 @@ media_player:
   - platform: speaker_source
     id: external_media_player
     name: Media Player
-    announcement_speaker: announcement_resampling_speaker
-    media_speaker: media_resampling_speaker
     announcement_pipeline:
       format: FLAC     # FLAC is the least processor intensive codec
       num_channels: 1  # Stereo audio is unnecessary for announcements
       sample_rate: 48000
+      speaker: announcement_resampling_speaker
+      sources:
+        - audio_file_announcement_source
+        - http_announcement_source
     media_pipeline:
       format: FLAC     # FLAC is the least processor intensive codec
       num_channels: 2
       sample_rate: 48000
+      speaker: media_resampling_speaker
+      sources:
+        - http_media_source
+        - sendspin_media_source
     volume_increment: 0.05
     volume_min: 0.4
     volume_max: 0.85
-    sources:
-      - file_source
-      - http_source
-      - sendspin_source
     on_mute:
       - script.execute: control_leds
     on_unmute:
@@ -1766,37 +1769,6 @@ external_components:
     components:
       - voice_kit
     refresh: 0s
-  - source:
-      # https://github.com/esphome/esphome/pull/12256
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: a2d98e1d5e020200db8f3caf27a74a939a661dc4
-    components: [audio]
-  - source:
-      # https://github.com/esphome/esphome/pull/12258
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: b4b7c5b25ebe0f2ab988f700219fa3c57b2377b7
-    components: [media_player]
-  - source:
-      # https://github.com/esphome/esphome/pull/12284
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: d48058e140c98f5c2d902661d851a6b712d62434
-    components: [sendspin]
-  - source:
-      # https://github.com/esphome/esphome/pull/14013
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: 51dcce3d1f22865ebb458a5447bbc877ac946b5a
-    components: [mdns]
-  - source:
-      # https://github.com/esphome/esphome/pull/12429
-      type: git
-      url: https://github.com/esphome/esphome
-      ref: b49b09b6ae56502aa3ce51be86f90d732d019b2c
-    refresh: 0s
-    components: [file, http_request, media_source, speaker_source]
 
 audio_dac:
   - platform: aic3204
@@ -1862,23 +1834,18 @@ micro_wake_word:
                                       sound_file: "wake_word_triggered_sound"
                                   - delay: 300ms
                             - if:
-
                                 condition:
-
                                   switch.is_on: stealth_listen_switch
-
                                 then:
-
                                   - script.execute: stealth_listen_stop
-
                                   - switch.turn_off: stealth_listen_switch
-
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;
 
 select:
   - platform: template
     name: "Wake word sensitivity"
+    id: wake_word_sensitivity
     optimistic: true
     initial_option: Slightly sensitive
     restore_value: true
@@ -1910,8 +1877,10 @@ select:
 voice_assistant:
   id: va
   microphone:
-    microphone: i2s_mics
-    channels: 0
+    - microphone: i2s_mics
+      channels: 0
+    - microphone: i2s_mics
+      channels: 1
   media_player: external_media_player
   micro_wake_word: mww
   use_wake_word: false
@@ -1920,11 +1889,7 @@ voice_assistant:
   volume_multiplier: 1
   on_client_connected:
     - lambda: id(init_in_progress) = false;
-    - if:
-        condition:
-          lambda: return !id(stealth_listen_enabled);
-        then:
-          - micro_wake_word.start:
+    - micro_wake_word.start:
     - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
     - script.execute: control_leds
   on_client_disconnected:

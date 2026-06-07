@@ -1,0 +1,15 @@
+services:
+  esphome:
+    container_name: esphome
+    image: ghcr.io/esphome/esphome:latest
+    restart: unless-stopped
+    volumes:
+      - /Users/balazstorok/Documents/GitHub/esphome/balazs_macos_esphome/config:/config
+    ports:
+      - "127.0.0.1:6052:6052"
+    environment:
+      - TZ=Europe/Budapest
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "pip install --upgrade --pre esphome-device-builder &&
+      exec esphome-device-builder --host 0.0.0.0 --port 6052 /config"
