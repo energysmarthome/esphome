@@ -74,40 +74,75 @@ globals:
     initial_value: "false"
 
 script:
+
   - id: locsolas_bekapcsolt
+
     mode: queued
+
     then:
+
+      - script.stop: locsolas_kikapcsolt
+
       - if:
+
           condition:
+
             lambda: "return !id(locsolas_mar_aktiv);"
+
           then:
+
             - lambda: |-
+
                 id(kerti_csap_elozo_allapot) = id(kerti_csap).state;
+
                 id(locsolas_mar_aktiv) = true;
+
       - switch.turn_off: kerti_csap
 
   - id: locsolas_kikapcsolt
-    mode: queued
+
+    mode: restart
+
     then:
-      - delay: 300ms
+
+      - delay: 6s
+
       - if:
+
           condition:
+
             lambda: |-
+
               return !id(locsolas_kor_1).state &&
+
                      !id(locsolas_kor_2).state &&
+
                      !id(locsolas_kor_3).state &&
+
                      !id(locsolas_kor_4).state &&
+
                      !id(locsolas_kor_5).state &&
+
                      !id(locsolas_kor_6).state;
+
           then:
+
             - lambda: |-
+
                 id(locsolas_mar_aktiv) = false;
+
             - if:
+
                 condition:
+
                   lambda: "return id(kerti_csap_elozo_allapot);"
+
                 then:
+
                   - switch.turn_on: kerti_csap
+
                 else:
+
                   - switch.turn_off: kerti_csap
 
 switch:

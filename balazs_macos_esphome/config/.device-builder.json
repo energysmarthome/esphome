@@ -5,6 +5,106 @@
   },
   "_firmware_jobs": [
     {
+      "job_id": "51444cbde22e",
+      "configuration": "vizoraakna.yaml",
+      "job_type": "upload",
+      "status": "completed",
+      "created_at": "2026-06-26T21:11:00.287535+00:00",
+      "started_at": "2026-06-26T21:12:44.189210+00:00",
+      "completed_at": "2026-06-26T21:13:27.952962+00:00",
+      "exit_code": 0,
+      "error": null,
+      "port": "OTA",
+      "new_name": "",
+      "depends_on": "5a5fc3131efb",
+      "dependency_released": true,
+      "progress": 100,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    },
+    {
+      "job_id": "5a5fc3131efb",
+      "configuration": "vizoraakna.yaml",
+      "job_type": "compile",
+      "status": "completed",
+      "created_at": "2026-06-26T21:11:00.287412+00:00",
+      "started_at": "2026-06-26T21:11:00.289483+00:00",
+      "completed_at": "2026-06-26T21:12:44.187716+00:00",
+      "exit_code": 0,
+      "error": null,
+      "port": "",
+      "new_name": "",
+      "depends_on": "",
+      "dependency_released": false,
+      "progress": null,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    },
+    {
+      "job_id": "54479172be6a",
+      "configuration": "medencevezerlo.yaml",
+      "job_type": "upload",
+      "status": "completed",
+      "created_at": "2026-06-21T11:55:37.127348+00:00",
+      "started_at": "2026-06-21T11:57:48.265160+00:00",
+      "completed_at": "2026-06-21T11:58:27.388555+00:00",
+      "exit_code": 0,
+      "error": null,
+      "port": "OTA",
+      "new_name": "",
+      "depends_on": "ff02c009b018",
+      "dependency_released": true,
+      "progress": 100,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    },
+    {
+      "job_id": "ff02c009b018",
+      "configuration": "medencevezerlo.yaml",
+      "job_type": "compile",
+      "status": "completed",
+      "created_at": "2026-06-21T11:55:37.127239+00:00",
+      "started_at": "2026-06-21T11:55:37.128277+00:00",
+      "completed_at": "2026-06-21T11:57:48.259784+00:00",
+      "exit_code": 0,
+      "error": null,
+      "port": "",
+      "new_name": "",
+      "depends_on": "",
+      "dependency_released": false,
+      "progress": null,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    },
+    {
       "job_id": "3d306c0b7e46",
       "configuration": "uj_intercom-haloszoba_v5.yaml",
       "job_type": "upload",
@@ -380,6 +480,31 @@
       "source_esphome_version": ""
     },
     {
+      "job_id": "b6cbddd93c1b",
+      "configuration": "",
+      "job_type": "reset_build_env",
+      "status": "failed",
+      "created_at": "2026-06-21T11:54:06.314626+00:00",
+      "started_at": "2026-06-21T11:54:06.315766+00:00",
+      "completed_at": "2026-06-21T11:54:24.771626+00:00",
+      "exit_code": 1,
+      "error": null,
+      "port": "",
+      "new_name": "",
+      "depends_on": "",
+      "dependency_released": false,
+      "progress": null,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    },
+    {
       "job_id": "21e9fcfb68b6",
       "configuration": "ha_konyha_voice_2026_5_STEALTH_manual_v3_reviewed.yaml",
       "job_type": "clean",
@@ -478,31 +603,84 @@
       "source_pin_sha256": "",
       "source_label": "",
       "source_esphome_version": ""
-    },
-    {
-      "job_id": "e7f45988193c",
-      "configuration": "uj_intercom-haloszoba.yaml",
-      "job_type": "clean",
-      "status": "completed",
-      "created_at": "2026-06-06T20:30:47.600933+00:00",
-      "started_at": "2026-06-06T20:30:47.601126+00:00",
-      "completed_at": "2026-06-06T20:30:55.114700+00:00",
-      "exit_code": 0,
-      "error": null,
-      "port": "",
-      "new_name": "",
-      "depends_on": "",
-      "dependency_released": false,
-      "progress": null,
-      "remote_peer": "",
-      "remote_job_id": "",
-      "remote_peer_label": "",
-      "device_name": "",
-      "device_friendly_name": "",
-      "source": "local",
-      "source_pin_sha256": "",
-      "source_label": "",
-      "source_esphome_version": ""
     }
-  ]
+  ],
+  "bejaratiajto-villanykapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:C8:F7:CB"
+  },
+  "boti-szoba-redony.yaml": {
+    "mac_address": "EC:FA:BC:C4:5F:A7"
+  },
+  "botiszoba-lampakapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:91:F3:A7"
+  },
+  "ejjelilampa.yaml": {
+    "mac_address": "EC:4D:3E:95:5C:51"
+  },
+  "eloszoba-villanykapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:91:F4:F0"
+  },
+  "eloszobaszekreny.yaml": {
+    "mac_address": "08:3A:F2:52:D8:70"
+  },
+  "fogyasztasmero.yaml": {
+    "mac_address": "98:F4:AB:FB:A0:68"
+  },
+  "folyoso-lampakapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:91:F3:6E"
+  },
+  "furdoszoba-villanykapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:C8:A5:1A"
+  },
+  "furdoszobaparaelszivo-rele.yaml": {
+    "mac_address": "24:4C:AB:43:B6:3A"
+  },
+  "gardrob-villanykapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:91:F3:AD"
+  },
+  "ha_konyha_voice_2026_5_STEALTH_manual_v3_reviewed.yaml": {
+    "mac_address": "20:F8:3B:09:D0:D3"
+  },
+  "haloszoba-redony.yaml": {
+    "mac_address": "EC:FA:BC:C4:5A:76"
+  },
+  "haloszoba-villanykapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:91:F5:61"
+  },
+  "haztartasi-lampakapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:C8:A0:EE"
+  },
+  "kiskapu-vezerlo.yaml": {
+    "mac_address": "8C:94:DF:4F:8C:9C"
+  },
+  "konyha-villanykapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:C8:F7:97"
+  },
+  "lucas.yaml": {
+    "mac_address": "94:B5:55:F8:9F:8C"
+  },
+  "lucas2.yaml": {
+    "mac_address": "3C:61:05:13:8C:64"
+  },
+  "marciszoba-redony.yaml": {
+    "mac_address": "EC:FA:BC:C4:BF:1D"
+  },
+  "medence-aramtalanito-rele.yaml": {
+    "mac_address": "48:F6:EE:8A:16:04"
+  },
+  "medencevezerlo.yaml": {
+    "mac_address": "98:F4:AB:0D:F5:CC"
+  },
+  "nappali-villanykapcsolo.yaml": {
+    "mac_address": "C4:4F:33:E3:1A:5E"
+  },
+  "terasz-lampakapcsolo.yaml": {
+    "mac_address": "D8:F1:5B:C8:F7:6D"
+  },
+  "vizoraakna.yaml": {
+    "mac_address": "B0:B2:1C:96:D3:4C"
+  },
+  "uj_intercom-haloszoba_v5.yaml": {
+    "mac_address": "3C:0F:02:DF:17:6C"
+  }
 }

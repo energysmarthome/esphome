@@ -112,10 +112,12 @@ sensor:
   - platform: dallas_temp
     address: "0xb50b23744c6fcc28"
     id: medenceviz_homerseklet
+    update_interval: 5s
     name: "Medencevíz hőmréséklet számításhoz"
 
   - platform: dallas_temp
     address: "0x9a0b2374c56c3f28"
+    update_interval: 5s
     id: napkollektor_homerseklet
     name: "Napkollektortól jövő víz hőmérséklet számításhoz"
 
